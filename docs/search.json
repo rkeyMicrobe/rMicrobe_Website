@@ -1,0 +1,142 @@
+[
+  {
+    "objectID": "tutorials/index.html",
+    "href": "tutorials/index.html",
+    "title": "Coding Tutorials",
+    "section": "",
+    "text": "These are reproducible walkthroughs written entirely in Quarto (.qmd) files.\nThings to keep in mind:\n\nWhen available, I link to publicly available datasets, literature, and workflows.\nPlease start with a small subset of samples while learning. It’s easier before scaling up.\nEach tutorial includes a subsection showing required packages and versions used.\nMy writing style is intentionally short, choppy, to the point. Lo siento!\nKnow your computer (CPU, MEM). Some lines of code will “exercise the beast”, hehe\n\n\n\n\n\nQiime2 - ASVs * BASH, Python\nWGCNA * R\nSpiec-Easi * R\n\n\n\n\nShort-Read: HMMER, PPLACER * BASH, Python, R\nLong-Read: HMMER * BASH, Python, R\nDB Taxonomy Annotation * BASH, R\n\n\n\n\nTargeted BMIS * R\nRF Normalization * R\nUntargeted SulfurHunter * R"
+  },
+  {
+    "objectID": "tutorials/index.html#introduction",
+    "href": "tutorials/index.html#introduction",
+    "title": "Coding Tutorials",
+    "section": "",
+    "text": "These are reproducible walkthroughs written entirely in Quarto (.qmd) files.\nThings to keep in mind:\n\nWhen available, I link to publicly available datasets, literature, and workflows.\nPlease start with a small subset of samples while learning. It’s easier before scaling up.\nEach tutorial includes a subsection showing required packages and versions used.\nMy writing style is intentionally short, choppy, to the point. Lo siento!\nKnow your computer (CPU, MEM). Some lines of code will “exercise the beast”, hehe"
+  },
+  {
+    "objectID": "tutorials/index.html#amplicons",
+    "href": "tutorials/index.html#amplicons",
+    "title": "Coding Tutorials",
+    "section": "",
+    "text": "Qiime2 - ASVs * BASH, Python\nWGCNA * R\nSpiec-Easi * R"
+  },
+  {
+    "objectID": "tutorials/index.html#metatranscripts",
+    "href": "tutorials/index.html#metatranscripts",
+    "title": "Coding Tutorials",
+    "section": "",
+    "text": "Short-Read: HMMER, PPLACER * BASH, Python, R\nLong-Read: HMMER * BASH, Python, R\nDB Taxonomy Annotation * BASH, R"
+  },
+  {
+    "objectID": "tutorials/index.html#metabolites",
+    "href": "tutorials/index.html#metabolites",
+    "title": "Coding Tutorials",
+    "section": "",
+    "text": "Targeted BMIS * R\nRF Normalization * R\nUntargeted SulfurHunter * R"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "tutorials/pplacer/index.html",
+    "href": "tutorials/pplacer/index.html",
+    "title": "Short-Read: HMMER + PPLACER",
+    "section": "",
+    "text": "This pipeline is a short-read functional placement workflow for metatranscriptome (metaT) ORFs. It assigns taxonomy by placing gene fragments onto fixed, curated reference gene trees. Instead of relying on sequence similarity alone.\n\nWho is this for? Researchers working with metaT short-read ORF (contig) datasets who want: phylogenetically informed taxonomic assignments\nWhere can I run it? On a remote HPC server (e.g., HiPerGator) or local system (i.e., your computer; provided the required software is installed)\nWhat’s the end goal? For each gene × metaT sample, produce a .jplace file containing phylogenetic placements. Each transcript is assigned taxonomy based on its position on the reference tree, which acts as a tally of gene-specific transcript placements.\n\n\nThis tutorial walks through a series of shell (.sh) scripts: Part 1 (A, B, C), Part 2, Part 3. Each corresponds to a specific stage of the pipeline. Brief descriptions are provided below.\n\n\n\n\n\n\nPIPELINE STAGES\n\n\n\n\n\n\n\n\n\n\n\nScript\nPurpose\nMain outputs\n\n\n\n\n1_A\nBuild gene-specific reference package and HMM\n.refpkg/, .hmm\n\n\n1_B\nSubmit parallel jobs across samples\nSLURM jobs\n\n\n1_C\nDetect contigs, align, and place onto gene tree\n.jplace\n\n\n2\nAggregate placements and export taxonomy tables\n*.taxID.csv\n\n\n3\nClassify placements and generate normalized counts\n*.counts.csv\n\n\n\n\n\n.\n."
+  },
+  {
+    "objectID": "tutorials/pplacer/index.html#introduction",
+    "href": "tutorials/pplacer/index.html#introduction",
+    "title": "Short-Read: HMMER + PPLACER",
+    "section": "",
+    "text": "This pipeline is a short-read functional placement workflow for metatranscriptome (metaT) ORFs. It assigns taxonomy by placing gene fragments onto fixed, curated reference gene trees. Instead of relying on sequence similarity alone.\n\nWho is this for? Researchers working with metaT short-read ORF (contig) datasets who want: phylogenetically informed taxonomic assignments\nWhere can I run it? On a remote HPC server (e.g., HiPerGator) or local system (i.e., your computer; provided the required software is installed)\nWhat’s the end goal? For each gene × metaT sample, produce a .jplace file containing phylogenetic placements. Each transcript is assigned taxonomy based on its position on the reference tree, which acts as a tally of gene-specific transcript placements.\n\n\nThis tutorial walks through a series of shell (.sh) scripts: Part 1 (A, B, C), Part 2, Part 3. Each corresponds to a specific stage of the pipeline. Brief descriptions are provided below.\n\n\n\n\n\n\nPIPELINE STAGES\n\n\n\n\n\n\n\n\n\n\n\nScript\nPurpose\nMain outputs\n\n\n\n\n1_A\nBuild gene-specific reference package and HMM\n.refpkg/, .hmm\n\n\n1_B\nSubmit parallel jobs across samples\nSLURM jobs\n\n\n1_C\nDetect contigs, align, and place onto gene tree\n.jplace\n\n\n2\nAggregate placements and export taxonomy tables\n*.taxID.csv\n\n\n3\nClassify placements and generate normalized counts\n*.counts.csv\n\n\n\n\n\n.\n."
+  },
+  {
+    "objectID": "tutorials/pplacer/index.html#required-packages",
+    "href": "tutorials/pplacer/index.html#required-packages",
+    "title": "Short-Read: HMMER + PPLACER",
+    "section": "Required Packages",
+    "text": "Required Packages\n\n\n\n\n\n\nREQUIRED PACKAGES\n\n\n\n\n\n\nPackage\nVersion\nNotes\n\n\n\n\nPython\n2.7\nBuild sequence metadata tables\n\n\ntaxtastic\n0.9.1\nTaxonomy handling and refpkg construction\n\n\nseqmagick\n0.8.4\nFASTA ↔︎ Stockholm format conversion\n\n\nhmmer\n3.4\nHMM construction and contig detection\n\n\npplacer\n1.1\nPhylogenetic placement\n\n\n\n\n\n.\n."
+  },
+  {
+    "objectID": "tutorials/pplacer/index.html#starting-files",
+    "href": "tutorials/pplacer/index.html#starting-files",
+    "title": "Short-Read: HMMER + PPLACER",
+    "section": "Starting Files",
+    "text": "Starting Files\nBefore running Part 1_A!!\nThese files are absolutely needed for Part 1_A. And they are are reused throughout all stages of the pipeline.\n\n\n\n\nFile\nDescription\n\n\n\n\ngenesAbbr.txt\nGene abbreviations used in filenames and arrays\n\n\ngenes.txt\nCorresponding gene directory names\n\n\n*.trimal2.fasta\nTrimmed reference alignment\n\n\nRAxML_result*.tre\nReference phylogenetic tree\n\n\nRAxML_info*.tre\nTree statistics file\n\n\ntaxonomy.db\nTaxonomy database used by taxit\n\n\n*.sampleList.txt\nList of sample IDs for dataset\n\n\n*.orfs40.fasta.gz\nORF/contig FASTA files (one per sample)\n\n\n\n\n.\n."
+  },
+  {
+    "objectID": "tutorials/pplacer/index.html#scripts",
+    "href": "tutorials/pplacer/index.html#scripts",
+    "title": "Short-Read: HMMER + PPLACER",
+    "section": "Scripts",
+    "text": "Scripts\nLet’s get started!\n\nMental reminder:\n- Part 1: Builds gene-specific references once.\n- Part 2: Aggregates placements across samples.\n- Part 3: Converts placements into normalized count tables.\n\n\nPart 1\n1_pplacer_A-C\n\n\nPart 2\n2_pplacer\n\n\nPart 3\n3_pplacer"
+  },
+  {
+    "objectID": "tutorials/pplacer/scripts/part1.html",
+    "href": "tutorials/pplacer/scripts/part1.html",
+    "title": "PPLACER Part 1",
+    "section": "",
+    "text": ".\n."
+  },
+  {
+    "objectID": "tutorials/pplacer/scripts/part1.html#script-a",
+    "href": "tutorials/pplacer/scripts/part1.html#script-a",
+    "title": "PPLACER Part 1",
+    "section": "",
+    "text": ".\n."
+  },
+  {
+    "objectID": "tutorials/pplacer/scripts/part1.html#script-b",
+    "href": "tutorials/pplacer/scripts/part1.html#script-b",
+    "title": "PPLACER Part 1",
+    "section": "Script B",
+    "text": "Script B\n.\n."
+  },
+  {
+    "objectID": "tutorials/pplacer/scripts/part1.html#script-c",
+    "href": "tutorials/pplacer/scripts/part1.html#script-c",
+    "title": "PPLACER Part 1",
+    "section": "Script C",
+    "text": "Script C"
+  },
+  {
+    "objectID": "tutorials/qiime/index.html",
+    "href": "tutorials/qiime/index.html",
+    "title": "Amplicons + Qiime2",
+    "section": "",
+    "text": "This pipeline uses QIIME2 for processing 16S rRNA gene amplicon data into amplicon sequence variants (ASVs). Paired-end short reads were generated using the 515F–806R primer pair. This pipeline quality filters, trims, and denoises reads, then taxonomically classifies them using the SILVA reference database.\n\nWho is this for? For researchers working with 16S rRNA gene amplicon datasets. They want ASV-level resolution, not OTU. They are new to QIIME and want a guided example.\nWhere can I run it? On a local machine (eg. Linux, macOS). On a remote HPC system.\nWhat’s the end goal? To produce an ASV count table, representative sequence table, and taxonomy table that links to sample metadata. These outputs can be then shuttled to R for statistical and ecological analysis.\n\n\nThis tutorial will walk you through 7 steps:\n\n\n\n\n\n\nPIPELINE STEPS\n\n\n\n\n\n\n\n\n\n\n\nStep\nPurpose\nMain outputs\n\n\n\n\n1\nImport paired-end reads, assess quality using FASTQC\n.qza (raw sequences), .qzv (quality summaries)\n\n\n2\nRemove primers, adapters\n.qza (trimmed reads), .qzv (post-trim quality)\n\n\n3\nIndependent quality control (optional)\nFASTQC reports\n\n\n4\nDetermine truncation lengths using Figaro\nTruncation parameters (.json)\n\n\n5\nDenoise, merge reads using DADA2\nASV table, representative sequences, denoising stats\n\n\n6\nAssign taxonomy using SILVA classifier\nTaxonomy .qza, .qzv\n\n\n7\nExport files for R / phyloseq\n.tsv, .txt files\n\n\n\n\n\n.\n."
+  },
+  {
+    "objectID": "tutorials/qiime/index.html#introduction",
+    "href": "tutorials/qiime/index.html#introduction",
+    "title": "Amplicons + Qiime2",
+    "section": "",
+    "text": "This pipeline uses QIIME2 for processing 16S rRNA gene amplicon data into amplicon sequence variants (ASVs). Paired-end short reads were generated using the 515F–806R primer pair. This pipeline quality filters, trims, and denoises reads, then taxonomically classifies them using the SILVA reference database.\n\nWho is this for? For researchers working with 16S rRNA gene amplicon datasets. They want ASV-level resolution, not OTU. They are new to QIIME and want a guided example.\nWhere can I run it? On a local machine (eg. Linux, macOS). On a remote HPC system.\nWhat’s the end goal? To produce an ASV count table, representative sequence table, and taxonomy table that links to sample metadata. These outputs can be then shuttled to R for statistical and ecological analysis.\n\n\nThis tutorial will walk you through 7 steps:\n\n\n\n\n\n\nPIPELINE STEPS\n\n\n\n\n\n\n\n\n\n\n\nStep\nPurpose\nMain outputs\n\n\n\n\n1\nImport paired-end reads, assess quality using FASTQC\n.qza (raw sequences), .qzv (quality summaries)\n\n\n2\nRemove primers, adapters\n.qza (trimmed reads), .qzv (post-trim quality)\n\n\n3\nIndependent quality control (optional)\nFASTQC reports\n\n\n4\nDetermine truncation lengths using Figaro\nTruncation parameters (.json)\n\n\n5\nDenoise, merge reads using DADA2\nASV table, representative sequences, denoising stats\n\n\n6\nAssign taxonomy using SILVA classifier\nTaxonomy .qza, .qzv\n\n\n7\nExport files for R / phyloseq\n.tsv, .txt files\n\n\n\n\n\n.\n."
+  },
+  {
+    "objectID": "tutorials/qiime/index.html#required-materials",
+    "href": "tutorials/qiime/index.html#required-materials",
+    "title": "Amplicons + Qiime2",
+    "section": "Required Materials",
+    "text": "Required Materials\nHere is a list of required packages:\n\n\n\n\n\n\nREQUIRED PACKAGES\n\n\n\n\n\n\nPackage\nVersion\nNotes\n\n\n\n\nQIIME2\n2022.8\nMain package for processing\n\n\nPython, Conda\n≥ 3.8\nDependency for QIIME2\n\n\nCutadapt\nin QIIME2\nPrimer and adapter removal\n\n\nDADA2\nin QIIME2\nASV inference and denoising\n\n\nFigaro\nlatest\nData-driven truncation length selection\n\n\nFASTQC\nlatest\nIndependent read quality assessment (optional)\n\n\nSILVA\n138+\n515F–806R trained reference classifier\n\n\n\n\n\n.\n."
+  },
+  {
+    "objectID": "tutorials/qiime/index.html#pipeline",
+    "href": "tutorials/qiime/index.html#pipeline",
+    "title": "Amplicons + Qiime2",
+    "section": "Pipeline",
+    "text": "Pipeline\n\nStep 1: The Bare Necessities\n\nPython Install\nQIIME2 Install\n\nInstall the QIIME2 community release (v2022.8) in a conda environment.\nFollow the official installation instructions provided by the QIIME2 developers:\nhttps://forum.qiime2.org/t/qiime-2-2022-8-is-now-available/23994\nconda create -n qiime2-community-2022.8-BETA \\\n  -c conda-forge -c bioconda \\\n  -c https://packages.qiime2.org/qiime2/2022.8/passed/community/ \\\n  qiime2-community\n  \n  conda activate qiime2-2022.11\n.\n\n\nStep 2: A Good Artifact\nImport your raw paired-end FASTQ files into QIIME2 and converts them into a single artifact. This is in a structure the QIIME2 package accepts.\nqiime tools import \\\n    --type 'SampleData[PairedEndSequencesWithQuality]' \\\n    --input-path \"manifest_g3_16s.txt\" \\\n    --output-path \"./qza/g3_16s_rawSeqs.qza\" \\\n    --input-format PairedEndFastqManifestPhred33V2\n\nSampleData[PairedEndSequencesWithQuality]: paired-end sequencing reads with quality scores (R1 and R2 FASTQs).\nManifest file: maps sample IDs to FASTQ file paths in your project directory.\nOutput: creates a QIIME2 artifact (.qza) at specified location using the specified name.\nEncoding: FASTQ files use Phred+33 (standard Illumina quality encoding).\n\n\nNow change the qza to qzv to visualize\nqiime demux summarize \\\n    --i-data \"./qza/g3_16s_rawSeqs.qza\" \\\n    --o-visualization \"./qzv/g3_16s_rawSeqs.qzv\" \n\nView .qzv files at https://view.qiime2.org/\nDrag ’n drop\n\n\nOPTIONAL STEP! This will run FASTQC on a small subset of raw reads as an independent quality check, outside of QIIME2.\nchmod 770 ./prok/*gz\ncp ./prok/V4_515F_New_V5R_new-72909_GTATCGTCGT_R1.fastq.gz ./fastqc\ncp ./prok/V4_515F_New_V5R_new-72909_GTATCGTCGT_R2.fastq.gz ./fastqc\ngzip -d ./fastqc/*gz\nfastqc -t 6 ./fastqc/*fastq\n\n‘chmod’ command ensures the FASTQ files are readable/executable.\nCopies one R1 and R2 FASTQ files for sample 72909 to a working directory.\nDecompress. FASTQC requires uncompressed FASTQ files.\nGenerates an HTML reports, lets you known per-base quality, GC content, adapter contamination, and other diagnostics.\n\n.\n\n\nStep 3: Drop Dead Weight\nThis step will remove primers, adapters, and residual library sequences from the paired-end reads, then re-summarizes read quality.\nqiime cutadapt trim-paired \\\n  --i-demultiplexed-sequences \"./qza/g3_16s_rawSeqs.qza\" \\\n  --p-cores 20 \\\n  --p-front-f GTGYCAGCMGCCGCGGTAA ACACTGACGACATGGTTCTACA AATGATACGGCGACCACCGAGATCT \\\n  --p-adapter-f TACGGTAGCAGAGACTTGGTCT CAAGCAGAAGACGGCATACGAGAT AGACCAAGTCTCTGC \\\n  --p-front-r GGACTACNVGGGTWTCTAAT ACACTGACGACATGGTTCTACA AATGATACGGCGACCACCGAGATCT \\\n  --p-adapter-r TACGGTAGCAGAGACTTGGTCT CAAGCAGAAGACGGCATACGAGAT TGTAGAACCATGTC \\\n  --p-discard-untrimmed \\\n  --p-no-indels \\\n  --p-error-rate 0.2 \\\n  --o-trimmed-sequences \"./qza/g3_16s_trimmed.qza\"\n\nYou will need to specify available cores on your computer. The more the better. For speed. If you have 16 CPUS, type 14.\nYou will need to know your primer and adapter sequences.\n--p-discard-untrimmed This discards reads where primers are not detected.\np-no-indels prevents insertions/deletions during matching.\n--p-error-rate 0.2 allows limited mismatches so degenerate primer positions are still recognized.\n\n\nAnother OPTIONAL Step! Compare this to your previous ‘qiime demux summarize’\nqiime demux summarize \\\n    --i-data \"./qza/g3_16s_trimmed.qza\" \\\n    --o-visualization \"./qzv/g3_16s_trimmed.qzv\"\n.\n\n\nStep 4: FIGARO\nFigaro is a package that objectively (not subjectively) selects truncation lengths for paired-end amplicon reads prior to DADA2 denoising. Emphasis on “not subjectively”. Truncation lengths are chosen based on read quality and overlap metrics than visual guesswork.\nwget http://john-quensen.com/wp-content/uploads/2020/03/figaro.yml\nconda env create -n figaro -f figaro.yml\nwget https://github.com/Zymo-Research/figaro/archive/master.zip\nunzip master.zip\nrm master.zip\ncd figaro-master/figaro\nchmod 755 *.py\nwget https://github.com/jfq3/Miscellaneous-scripts/raw/master/test_figaro.sh\n\nNow, we will provide Figaro with one R1 and R2 FASTQ. A single sample, in this case sample 72910, is sufficient because quality profiles are typically consistent across a Illumina seq’ing run.\ndir=\"./figaro-master/figaro/test_figaro\"\ncp ./prok/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R1.fastq.gz ${dir}\ncp ./prok/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R2.fastq.gz ${dir}\n\ngzip -d ${dir}/*.fastq.gz\n\nRename them to easier names and run them into Figaro’s Python script (.py)\nmv ${dir}/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R1.fastq ${dir}/sam1_16s_R1.fastq\nmv ${dir}/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R2.fastq ${dir}/sam1_16s_R2.fastq\n\ncd ./figaro-master/figaro\npython figaro.py -i ./test_figaro/ -o ./test_figaro/ -f 10 -r 10 -a 253 -F zymo\ncd ./test_figaro\nless trimParameters.json\n\n-f 10 -r 10 are minimum overlap requirements (forward/reverse).\n-a 253 this is expected amplicon length (after primer removal).\n-F zymo is the scoring model appropriate for Illumina data.\nless will open up the .json file.\n\n\nThe top entry you see shows the recommended forward and reverse truncation length. Choose the highest percent score where expected errors are not ≥ 3. I expect the F and R will overlap by 12 nt.\nq           # To exit out of the .json\ncd ../../.. # Go back to the starting position in your working directory\n.\n\n\nStep 5: DADA2\nNow, it is time to denoise, merge, and infer ASVs from the primer-trimmed paired-end reads.\nqiime dada2 denoise-paired \\\n  --i-demultiplexed-seqs \"./qza/g3_16s_trimmed.qza\" \\\n  --p-trunc-len-f 244 --p-max-ee-f 2 \\\n  --p-trunc-len-r 49  --p-max-ee-r 2 \\\n  --p-n-threads 20 \\\n  --o-representative-sequences \"./qza/g3_16s_reprSeqs.qza\" \\\n  --o-table \"./qza/g3_16s_reprSeqs_countTable.qza\" \\\n  --o-denoising-stats \"./qza/g3_16s_denoiseStats.qza\"\n\n--p-trunc-len-f, --p-trunc-len-r: Truncates reads at the Figaro-selected positions.\n--p-max-ee-f/r 2: Reads with &gt;2 expected errors are discarded.\n\nCongrats! We have a table of representative sequences and the count table ✨🥳.\n.\n\n\nStep 6: Taxonomy\nFor this step, you may run taxonomy classification either on an HPC system or on your local machine. Classification with the SILVA database can exceed typical RAM limits, which is why an HPC environment is generally preferred. But the step can be run locally if sufficient memory is available. The alignment will run slower and your computer will be working hard.\n\nStop here! You will need to pre-trained Classifier in QIIME2 before moving forward. Refer to this tutorial to pre-train a classifier… QIIME2 Classifer\n\n\nHPC SystemLocal System\n\n\nOn an HPC system, like HiperGator, make a SLURM script. This script submits a taxonomy classification job to an HPC system, assigning taxonomy to ASVs using a pre-trained SILVA classifier in QIIME 2.\nFirst, place your required inputs in the appropriate working directory. Only two files are needed: - silvaClassifier.qza\n- reprSeqs.qza\nSecond, log into your HPC system and navigate to your working folder. Once resources are available, open a new script file by typing:\nnano\nThird, paste:\n\n#!/bin/bash\n#SBATCH --job-name=outFiles/taxclass.%j\n#SBATCH --ntasks=1\n#SBATCH --cpus-per-task=8\n#SBATCH --nodes=1\n#SBATCH --mem=400GB\n#SBATCH --account=b.durham\n#SBATCH --qos=b.durham-b\n#SBATCH -t 95:00:00\n#SBATCH --partition=hpg-milan\n#SBATCH --output=outFiles/taxclass.%A.out\n#SBATCH --array=1-1\n\ndate;hostname;pwd\n \nmodule load qiime2/2022.8\n\ndir=\"g3/qza/\" # Change to fit your pathway structure\n\nqiime feature-classifier classify-sklearn \\\n  --p-n-jobs 8 \\\n  --i-classifier \"./${dir}/silvaClassifier_nr99_515F.806R.qza\" \\\n  --i-reads \"./${dir}/g3_16s_reprSeqs.qza\" \\\n  --o-classification \"./${dir}/g3_16s_reprSeqs_taxAligned.qza\"\n  \nFinally, save the file and exit the editor, then submit the job with:\nsbatch taxclass.sh\n\n\n\nNote!\nTaxonomy classification with SILVA can exceed normal memory (ie. RAM) limits. If this command fails locally, reduce --p-n-jobs or run on an HPC system\n\nqiime feature-classifier classify-sklearn \\\n  --p-n-jobs 4 \\\n  --i-classifier \"./qza/silvaClassifier_nr99_515F.806R.qza\" \\\n  --i-reads \"./qza/g3_16s_reprSeqs.qza\" \\\n  --o-classification \"./qza/g3_16s_reprSeqs_taxAligned.qza\"\n\n\n\n.\n\n\nStep 7: Export Files\nAlmost done! Now, we have to export .qza files, convert to BIOM format, then to tab-deliminated table (.tsv). These file types can be opened, viewed, and pushed into R-studio on a local computer.\n\n1️⃣ Count Table = ASV-by-sample count matrix\n\n# qza to BIOM\nqiime tools export \\\n  --input-path \"./qza/g3_16s_reprSeqs_countTable.qza\" \\\n  --output-path \"./phyloseq\"\n  \n# BIOM to tsv\nbiom convert \\\n  -i \"./phyloseq/feature-table.biom\" \\\n  -o \"./phyloseq/g3_16s_countTable.tsv\" \\\n  --to-tsv\n\n# Clean the header for compability with R\nsed -i '1d' ./phyloseq/g3_16s_countTable.tsv\nsed -i 's/#OTU ID//' ./phyloseq/g3_16s_countTable.tsv\n  \n\n2️⃣ Representative Table = ASV sequences\n\n# qza to fasta\nqiime tools export \\\n  --input-path \"./qza/g3_16s_reprSeqs.qza\" \\\n  --output-path \"./phyloseq\"\n\n# fasta to two-column text file\nawk 'BEGIN{RS=\"&gt;\"}{print \"#\"$1\"\\t\"$2;}' ./phyloseq/dna-sequences.fasta | \\\n  tail -n+2 &gt; ./phyloseq/g3_16s_dnaSeqs.txt\n  \n\n3️⃣ Taxonomy Table = ASV taxonomy classifications\n\n# qza to tsv\nqiime tools export \\\n  --input-path \"./qza/g3_16s_reprSeqs_taxAligned.qza\" \\\n  --output-path \"./phyloseq\"\n\n# rename file\nmv ./phyloseq/taxonomy.tsv ./phyloseq/g3_16s_taxonomy.tsv"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome to rMicrobe!",
+    "section": "",
+    "text": "Welcome to rMicrobe!\n\nThis is a website created by Rebecca Key (me!).\nOn this website, you will find a collection of coding tutorials. All made to help scientists handle, wrangle, and analyze big data derived from microbial samples. Tutorials are in multiple coding languages (ie. syntax), such as R, python, and BASH.\nYou can also find available tinyLife illustrations for academic use. Feel free to reach out to license, commission, or discuss a project figure. My contact info is below!\n\nPages:\n\nRebecca Pages\nrMicrobe Tutorials\ntinyLife Illustrations\n\n\n\n💬 Have questions?\nEmail: rkeymicrobe@proton.me\nPlease write tutorial or art in the subject line"
+  }
+]
