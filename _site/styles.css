@@ -1,0 +1,49 @@
+/* =========================
+   Navbar (all themes)
+   ========================= */
+
+/* Background */
+.navbar {
+  background-color: #4b2c6f !important; /* dark purple */
+}
+
+/* All navbar text + links */
+.navbar a,
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: #cbb7e2 !important; /* light purple */
+}
+
+/* Hover state (slightly brighter, still purple) */
+.navbar a:hover,
+.navbar-nav .nav-link:hover {
+  color: #e8dcf5 !important;
+}
+
+/* Search icon */
+.navbar .bi-search {
+  color: #cbb7e2 !important;
+}
+
+/* Sidebar / hamburger toggle */
+.navbar-toggler {
+  border-color: #cbb7e2 !important;
+}
+
+.navbar-toggler-icon {
+  filter: brightness(0) saturate(100%) invert(85%);
+}
+
+/* =========================
+   Bold text (theme-aware)
+   ========================= */
+
+/* Light mode: darker purple */
+body.quarto-light strong {
+  color: #4b2c6f;
+}
+
+/* Dark mode: light purple */
+body.quarto-dark strong {
+  color: #cbb7e2;
+}

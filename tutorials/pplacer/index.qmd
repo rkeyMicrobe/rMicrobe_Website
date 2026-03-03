@@ -1,0 +1,102 @@
+---
+title: "Short-Read: HMMER + PPLACER"
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Introduction
+
+This pipeline is a short-read functional placement workflow for metatranscriptome (metaT) ORFs. It assigns taxonomy by placing gene fragments onto fixed, curated reference gene trees. Instead of relying on sequence similarity alone.
+
+-   **Who is this for?** 
+Researchers working with metaT short-read ORF (contig) datasets who want: phylogenetically informed taxonomic assignments
+
+-   **Where can I run it?** 
+On a remote HPC server (e.g., HiPerGator) or local system (i.e., your computer; provided the required software is installed) 
+
+-   **What's the end goal?** 
+For each gene × metaT sample, produce a .jplace file containing phylogenetic placements. Each transcript is assigned taxonomy based on its position on the reference tree, which acts as a tally of gene-specific transcript placements.
+
+---
+
+This tutorial walks through a series of shell (.sh) scripts: Part 1 (A, B, C), Part 2, Part 3. Each corresponds to a specific stage of the pipeline. Brief descriptions are provided below.
+
+::: {.callout-note title="PIPELINE STAGES"}
+| Script | Purpose | Main outputs |
+|--------|---------|--------------|
+| 1_A | Build gene-specific reference package and HMM | `.refpkg/`, `.hmm` |
+| 1_B | Submit parallel jobs across samples | SLURM jobs |
+| 1_C | Detect contigs, align, and place onto gene tree | `.jplace` |
+| 2 | Aggregate placements and export taxonomy tables | `*.taxID.csv` |
+| 3 | Classify placements and generate normalized counts | `*.counts.csv` |
+:::
+
+.
+
+.
+
+## Required Packages
+
+::: {.callout-note title="REQUIRED PACKAGES"}
+| Package    | Version | Notes |
+|------------|---------|-------|
+| Python     | 2.7     | Build sequence metadata tables |
+| taxtastic  | 0.9.1   | Taxonomy handling and refpkg construction |
+| seqmagick  | 0.8.4   | FASTA ↔ Stockholm format conversion |
+| hmmer      | 3.4     | HMM construction and contig detection |
+| pplacer    | 1.1     | Phylogenetic placement |
+:::
+
+.
+
+.
+
+## Starting Files
+
+Before running **Part 1_A**!! 
+
+These files are absolutely needed for Part 1_A. And they are are reused throughout all stages of the pipeline.
+
+::: {.callout-info title="Gene list files (drive array jobs)"}
+| File | Description |
+|------|-------------|
+| `genesAbbr.txt` | Gene abbreviations used in filenames and arrays |
+| `genes.txt` | Corresponding gene directory names |
+| `*.trimal2.fasta` | Trimmed reference alignment |
+| `RAxML_result*.tre` | Reference phylogenetic tree |
+| `RAxML_info*.tre` | Tree statistics file |
+| `taxonomy.db` | Taxonomy database used by `taxit` |
+| `*.sampleList.txt` | List of sample IDs for dataset |
+| `*.orfs40.fasta.gz` | ORF/contig FASTA files (one per sample) |
+:::
+
+.
+
+.
+
+## Scripts
+
+Let's get started! 
+
+> **Mental reminder:**  
+> - **Part 1:** Builds gene-specific references once.  
+> - **Part 2:** Aggregates placements across samples.  
+> - **Part 3:** Converts placements into normalized count tables.
+
+### Part 1
+[1_pplacer_A-C](scripts/part1.qmd){.btn .btn-primary .me-2}
+
+### Part 2
+[2_pplacer](scripts/part2.qmd){.btn .btn-primary .me-2}
+
+### Part 3
+[3_pplacer](scripts/part3.qmd){.btn .btn-primary .me-2}

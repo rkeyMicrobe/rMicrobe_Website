@@ -1,0 +1,39 @@
+---
+title: ""
+page-layout: full
+---
+
+::: {.container .py-5 .text-center}
+
+# Welcome to rMicrobe! {#sec-welcome-to-rmicrobe}
+
+:::
+
+This is a website created by Rebecca Key (me!). 
+
+On this website, you will find **a collection of coding tutorials**. All made to help scientists handle, wrangle, and analyze big data derived from microbial samples. Tutorials are in multiple coding languages (ie. syntax), such as **R, python, and BASH**. 
+
+You can also find available tinyLife illustrations for academic use. Feel free to reach out to license, commission, or discuss a project figure. My contact info is below! 
+
+---
+
+Pages: 
+
+::: {.container .py-5 .text-center}
+
+[Rebecca Pages](bib/main.qmd){.btn .btn-primary .me-2}
+
+[rMicrobe Tutorials](tutorials/index.qmd){.btn .btn-primary .me-2}
+
+[tinyLife Illustrations](illustrations/list.qmd){.btn .btn-primary .me-2}
+
+:::
+---
+
+
+### 💬 Have questions?
+
+Email: **rkeymicrobe@proton.me**  
+Please write **tutorial** or **art** in the subject line
+
+

@@ -1,0 +1,29 @@
+---
+title: "PPLACER Part 1"
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Script A
+
+.
+
+.
+
+## Script B
+
+.
+
+.
+
+## Script C
+
