@@ -1,5 +1,6 @@
 project:
   type: website
+  output-dir: docs
 
 website:
   title: "rMicrobe Website"
@@ -13,17 +14,16 @@ website:
         text: rMicrobe Tutorials
       - href: illustrations/index.qmd
         text: TinyLife Illustrations
-        
   search: true
 
 format:
   html:
     toc: true
     code-line-numbers: true
-    theme: 
-          dark: darkly
-          light: cosmo
-css: styles.css
+    theme:
+      dark: darkly
+      light: cosmo
+    css: styles.css
           
 
 
