@@ -21,11 +21,11 @@ Pages:
 
 ::: {.container .py-5 .text-center}
 
-[Rebecca Pages](bib/main.qmd){.btn .btn-primary .me-2}
+[About Me](bib/index.qmd){.btn .btn-primary .me-2}
 
 [rMicrobe Tutorials](tutorials/index.qmd){.btn .btn-primary .me-2}
 
-[tinyLife Illustrations](illustrations/list.qmd){.btn .btn-primary .me-2}
+[tinyLife Illustrations](illustrations/index.qmd){.btn .btn-primary .me-2}
 
 :::
 ---

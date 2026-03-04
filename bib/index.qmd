@@ -1,4 +1,129 @@
 ---
-title: "Under Construction"
+title: "About Me"
 format: html
 ---
+
+<div class="profile-card">
+
+<img src="images/rsk.png" class="profile-pic">
+
+<div class="profile-meta">
+
+<div class="profile-name">Rebecca Key</div>
+<div class="profile-role">Data Scientist • Microbiology</div>
+
+<div class="profile-links">
+
+<a href="https://www.linkedin.com/in/rkeymicrobe/">
+<i class="bi bi-linkedin"></i>
+</a>
+
+<a href="https://github.com/rkeyMicrobe">
+<i class="bi bi-github"></i>
+</a>
+
+<a href="https://orcid.org/0000-0002-9516-1645">
+<img src="images/ORCID_iD.svg.png">
+</a>
+
+</div>
+
+<div class="profile-email">
+  <a href="mailto:rkeyMicrobe@proton.me">rkeyMicrobe@proton.me</a>
+</div>
+<div class="profile-email">
+  <a href="mailto:rebeccakey@ufl.edu">rebeccakey@ufl.edu</a>
+</div>
+
+</div>
+</div>
+
+---
+
+<div class="about-page">
+
+::: {.panel-tabset}
+
+## About
+
+<div class="about-pics">
+<img src="images/art.png">
+</div>
+
+**I am a data scientist** who enjoys decoding complex data. My work centers on bioinformatics, biostatistics, and microbial systems, where I build reproducible analytical pipelines and apply integrative tools to uncover patterns in large, multidimensional, multi-omic datasets. 
+
+---
+
+The following principles guide my approach to scientific pursuit and data analysis:
+
+- **No dataset is too complex or large**. To organize, wrangle, or transform.
+- **To not know is an invitation to know**. Lets get started.   
+- **DNA is DNA**. Models change, but hidden frameworks persist. 
+
+<div class="about-pics">
+<img src="images/fig.png">
+</div>
+
+I began my career as a molecular biologist studying bacteria–squid symbiosis and Chlamydia pathology. I later worked with plant systems, including maize and bryophytes. During the COVID-19 pandemic (when many bench experiments were paused), I built my own computer and shifted toward marine microbiology and computational analysis.
+
+**Marine microbiology generates enormous datasets**, and the field needs scientists who can code. That realization ultimately led me to transition fully into bioinformatics and data science.
+
+<div class="about-pics">
+<img src="images/scientist.jpg">
+</div>
+
+<div class="about-pics">
+<img src="images/amby.jpg">
+</div>
+
+
+
+## Education
+
+<div class="education-item">
+
+<div class="education-icons">
+<img src="images/uf.png">
+</div>
+
+<div class="education-text">
+<strong>Ph.D. in Botany </strong><br>
+University of Florida
+
+Courses: Bioinformatics, Genomics, Ecology
+</div>
+</div>
+
+
+<div class="education-item">
+
+<div class="education-icons">
+<img src="images/siuc.png">
+</div>
+
+<div class="education-text">
+<strong>B.S. in Microbiology </strong><br>
+Southern Illinois University Carbondale
+
+Courses: Molecular Microbiology, Chemistry
+</div>
+</div>
+
+
+<div class="education-item">
+
+<div class="education-icons">
+<img src="images/rlc.png">
+</div>
+
+<div class="education-text">
+<strong>A.A.S. in Veterinary Technology </strong><br>
+Rend Lake Community College
+
+Courses: Surgery, Pathology, Avian Medicine
+</div>
+</div>
+
+
+:::
+</div>

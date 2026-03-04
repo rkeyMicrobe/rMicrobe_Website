@@ -47,3 +47,168 @@ body.quarto-light strong {
 body.quarto-dark strong {
   color: #cbb7e2;
 }
+
+/* =============================
+   Bibligraphy items
+   ============================= */
+   
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.profile-pic {
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 2.5rem;
+}
+
+.profile-role {
+  opacity: 0.8;
+  font-size: 2rem;
+}
+
+.profile-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 3rem;   /* controls LinkedIn + GitHub icon size */
+}
+
+.profile-links img {
+  width: 50px;       /* controls ORCID svg size */
+  height: 50px;
+}
+
+.profile-email {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  opacity: 0.85;
+}
+
+body.page-about-me .nav-tabs .nav-link {
+  font-size: 1.15rem;
+  padding: 0.55rem 1.1rem;
+}
+
+body.page-about-me .tab-content {
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+
+body.page-about-me .page-section {
+  font-size: 1.18rem;
+  line-height: 1.75;
+}
+
+/* Tab titles */
+.about-page .nav-tabs .nav-link {
+  font-size: 1.35rem;
+  padding: 0.6rem 1.3rem;
+}
+
+.about-page .tab-content {
+  font-size: 1.3rem;
+  line-height: 1.8;
+}
+
+/* =========================
+   Portfolio-style content width
+   ========================= */
+
+.about-page {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2rem;
+}
+
+/* Add breathing room under profile */
+.profile-card {
+  margin-bottom: 2rem;
+}
+
+/* Tab content container */
+.about-page .tab-content {
+  padding: 1.4rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+}
+
+/* =========================
+   Tab styling
+   ========================= */
+
+/* Inactive tabs */
+.nav-tabs .nav-link {
+  background-color: #4b2c6f;
+  color: #ffffff !important;
+  border: none;
+  margin-right: 4px;
+}
+
+/* Hover state */
+.nav-tabs .nav-link:hover {
+  background-color: #5e3a86;
+  color: #ffffff !important;
+}
+
+/* Active tab */
+.nav-tabs .nav-link.active {
+  background-color: #4b2c6f !important;
+  color: #ffffff !important;
+  border: none;
+}
+
+/* Tab titles */
+.about-page .nav-tabs .nav-link {
+  font-size: 1.35rem;
+  padding: 0.6rem 1.3rem;
+}
+
+/* =========================
+   Education section
+   ========================= */
+
+.education-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.education-text {
+  font-size: 1.5rem;
+}
+
+.education-icons {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.education-icons img {
+  width: 200px;
+  height: 200px;
+}
+
+.about-pics {
+  text-align: center;
+}
+
+.about-pics img {
+  width: 600px;
+  height: auto;
+}

@@ -137,6 +137,20 @@
     "href": "index.html",
     "title": "Welcome to rMicrobe!",
     "section": "",
-    "text": "Welcome to rMicrobe!\n\nThis is a website created by Rebecca Key (me!).\nOn this website, you will find a collection of coding tutorials. All made to help scientists handle, wrangle, and analyze big data derived from microbial samples. Tutorials are in multiple coding languages (ie. syntax), such as R, python, and BASH.\nYou can also find available tinyLife illustrations for academic use. Feel free to reach out to license, commission, or discuss a project figure. My contact info is below!\n\nPages:\n\nRebecca Pages\nrMicrobe Tutorials\ntinyLife Illustrations\n\n\n\n💬 Have questions?\nEmail: rkeymicrobe@proton.me\nPlease write tutorial or art in the subject line"
+    "text": "Welcome to rMicrobe!\n\nThis is a website created by Rebecca Key (me!).\nOn this website, you will find a collection of coding tutorials. All made to help scientists handle, wrangle, and analyze big data derived from microbial samples. Tutorials are in multiple coding languages (ie. syntax), such as R, python, and BASH.\nYou can also find available tinyLife illustrations for academic use. Feel free to reach out to license, commission, or discuss a project figure. My contact info is below!\n\nPages:\n\nAbout Me\nrMicrobe Tutorials\ntinyLife Illustrations\n\n\n\n💬 Have questions?\nEmail: rkeymicrobe@proton.me\nPlease write tutorial or art in the subject line"
+  },
+  {
+    "objectID": "bib/index.html",
+    "href": "bib/index.html",
+    "title": "About Me",
+    "section": "",
+    "text": "Rebecca Key\n\n\nData Scientist • Microbiology\n\n\n  \n  \n  \n\n\nrkeyMicrobe@proton.me\n\n\nrebeccakey@ufl.edu\n\n\n\n\n\n\nAboutEducation\n\n\n\n\n\nI am a data scientist who enjoys decoding complex data. My work centers on bioinformatics, quantitative statistics, and microbial systems, where I build reproducible analytical pipelines and apply integrative tools to uncover patterns in large, multidimensional, multi-omic datasets.\n\nThe following principles guide my approach to scientific pursuit and data analysis:\n\nNo dataset is too complex or large. To organize, wrangle, or transform.\nTo not know is an invitation to know. Lets get started.\n\nDNA is DNA. Models change, but hidden frameworks persist.\n\n\n\n\nI began my career as a molecular biologist studying bacteria–squid symbiosis and Chlamydia pathology. I later worked with plant systems, including maize and bryophytes. During the COVID-19 pandemic (when many bench experiments were paused), I built my own computer and shifted toward marine microbiology and computational analysis.\nMarine microbiology generates enormous datasets, and the field needs scientists who can code. That realization ultimately led me to transition fully into bioinformatics and data science.\n\n\n\n\n\n\n\n\n\n\n\n\n\nPh.D. in Botany  University of Florida\nCourses: Bioinformatics, Genomics, Ecology\n\n\n\n\n\n\n\nB.S. in Microbiology  Southern Illinois University Carbondale\nCourses: Molecular Microbiology, Chemistry\n\n\n\n\n\n\n\nA.A.S. in Veterinary Technology  Rend Lake Community College\nCourses: Surgery, Pathology, Avian Medicine"
+  },
+  {
+    "objectID": "bib/index.html#about",
+    "href": "bib/index.html#about",
+    "title": "About Me",
+    "section": "About",
+    "text": "About\nI am a data scientist specializing in large-scale microbial ecology datasets. My work integrates genomics, metabolomics, and environmental data to understand how microbial communities influence ecosystem processes across spatial gradients.\nMy experience includes building reproducible bioinformatics pipelines, statistical modeling of ecological systems, and developing tools to analyze high-throughput sequencing data."
   }
 ]
