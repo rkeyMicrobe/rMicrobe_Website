@@ -60,13 +60,19 @@ The following principles guide my approach to scientific pursuit and data analys
 - **To not know is an invitation to know**. Lets get started.   
 - **DNA is DNA**. Models change, but hidden frameworks persist. 
 
+- **You can teach anyone anything**. But you cannot teach passion. 
+
 <div class="about-pics">
 <img src="images/fig.png">
 </div>
 
 I began my career as a molecular biologist studying bacteria–squid symbiosis and Chlamydia pathology. I later worked with plant systems, including maize and bryophytes. During the COVID-19 pandemic (when many bench experiments were paused), I built my own computer and shifted toward marine microbiology and computational analysis.
 
-**Marine microbiology generates enormous datasets**, and the field needs scientists who can code. That realization ultimately led me to transition fully into bioinformatics and data science.
+---
+
+Marine microbiology generates enormous datasets, and the field needs scientists who can code. 
+
+**That realization ultimately led me to transition fully into bioinformatics and data science.**
 
 <div class="about-pics">
 <img src="images/scientist.jpg">
