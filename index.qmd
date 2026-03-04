@@ -9,7 +9,7 @@ page-layout: full
 
 :::
 
-This is a website created by Rebecca Key, a past scientific researcher of marine bacteria and phytoplankton. 
+This is a website created by Rebecca Key, a former scientific researcher of marine bacteria and algae. 
 
 On this website, you will find **a collection of coding tutorials**. All made to help students and scientists handle, wrangle, and analyze big data derived from microbial samples. Tutorials may contain multiple coding languages (ie. syntax), such as **R, python, and BASH**. 
 

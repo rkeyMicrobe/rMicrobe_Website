@@ -1,0 +1,344 @@
+---
+title: "Database Classifiers in Qiime2"
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Introduction
+
+This pipeline shows how to prepare a taxonomic reference databases for ASV taxonomy classification using QIIME2 and the RESCRIPt plugin. This is side-quest for the Qiime2 tutorial, if you don't have a classifier yet.  
+
+- **Who is this for?**  
+Researchers preparing reference databases for amplicon taxonomic classification in QIIME2. This tutorial is useful for users who want to build primer-specific classifiers than relying on pre-trained databases.
+
+- **Where can I run it?**  
+On a local machine (Linux, macOS) with a Conda-based QIIME2 installation, or on a remote HPC system where QIIME2 and RESCRIPt are installed.
+
+- **What's the end goal?**  
+To generate a trained Naive Bayes taxonomy classifiers (.qza) file tailored to specific primer pairs. These classifiers can then be used in downstream QIIME2 workflows to assign taxonomy to ASVs from amplicon sequencing datasets.
+
+> Note! db = database; seq = sequences. 
+> You might see these shorthands pop-up during my rambles! 
+
+---
+
+## Required Materials
+
+Here's what you need to get started:
+
+::: {.callout-note title="EXPECTED INPUT FILES"}
+
+| File Type | Description |
+|-----------|-------------|
+| Already-Made Artifact | .qza file of the db |
+| Reference FASTA | rRNA sequences for the db |
+| Reference taxonomy TSV | Taxonomic annotations for each db sequence |
+| Primer sequences | User should know |
+| QIIME2 environment | Activated Conda environment |
+
+:::
+
+And a list of required packages: 
+
+::: {.callout-note title="REQUIRED SOFTWARE"}
+
+| Software | Version | Purpose |
+|---------|---------|--------|
+| QIIME2 | ≥ 2023.x |  Main package for processing |
+| RESCRIPt | latest | Reference database curation and filtering |
+| Python / Conda | ≥ 3.8 | Dependency for QIIME2 |
+
+:::
+
+---
+
+## Pipeline
+
+The following databases are shown for this tutorial. 
+
+- **Silva**: There's a prepared .qza file available via the RESCRIPt plugin.
+- **PR2**: We need to make a .qza file from scratch.
+
+**Choose the one you prefer:**
+
+::: {.callout-note title="Databases Used"}
+
+| Database | Version | Notes |
+|---------|---------|--------|
+| SILVA SSURef_NR99 | 138.1 | 16S rRNA reference sequences |
+| PR2 (Mothur format) | v5.0.0 | Protist 18S reference sequences |
+| Primer sequences | user provided | NA |
+
+:::
+
+
+::: {.panel-tabset}
+
+### Silva
+
+#### **Step 1: Retrieve the Silva db. Covert RNA to DNA seqs.**
+
+```bash
+qiime rescript get-silva-data \
+    --p-version '138.1' \
+    --p-target 'SSURef_NR99' \
+    --p-include-species-labels \
+    --o-silva-sequences "../db/silva138.1/silva138.1_nr99_rna.qza" \
+    --o-silva-taxonomy "../db/silva138.1/silva138.1_nr99_tax.qza"  
+
+qiime rescript reverse-transcribe \
+	--i-rna-sequences "../db/silva138.1/silva138.1_nr99_rna.qza" \
+	--o-dna-sequences "../db/silva138.1/silva138.1_nr99_dna.qza"
+```
+- This uses the non-redundant 99% clustered small subunit (SSU) rRNA database.
+- You're outputs will be an artifact contain reference seqs and taxonomic annotations.
+- QIIME2 classifiers require DNA sequences to proceed.
+
+.
+
+#### **Step 2: Remove low quality sequences**
+ 
+```bash
+qiime rescript cull-seqs \
+	--i-sequences "../db/silva138.1/silva138.1_nr99_dna.qza" \
+	--o-clean-sequences "../db/silva138.1/silva138.1_nr99_dna_clean.qza"
+```
+- This will remove seqs with >5 ambiguous bases and >8 bases long homopolymer regions.
+- This cleans your db subset (ie. classifier)
+
+#### **Step 3: Filter by expected length**
+```bash
+qiime rescript filter-seqs-length-by-taxon \
+    --i-sequences "../db/silva138.1/silva138.1_nr99_dna_clean.qza"\
+    --i-taxonomy "../db/silva138.1/silva138.1_nr99_tax.qza"  \
+    --p-labels Archaea Bacteria Eukaryota \
+    --p-min-lens 900 1200 1400 \
+    --o-filtered-seqs "../db/silva138.1/silva138.1_nr99_dna_filter.qza" \
+    --o-discarded-seqs "../db/silva138.1/silva138.1_nr99_dna_discard.qza" 
+    # We will push discards into their own file
+```
+- Silva contains archaea, bacteria, and eukaryotes, we don't want to entirely ignore archae, euk ASVs.
+- Archaea = 900bp; Bacteria = 1200bp; Eukaryotes = 1400bp.
+- Still keep discarded seqs. You can inspect what was removed if needed.
+
+.
+
+#### **Step 4: Dereplicate db seqs**
+
+This command removes duplicate sequences from the reference database.
+
+```bash
+qiime rescript dereplicate \
+    --i-sequences "../db/silva138.1/silva138.1_nr99_dna_filter.qza"  \
+    --i-taxa "../db/silva138.1/silva138.1_nr99_tax.qza" \
+    --p-rank-handles 'silva' \
+    --p-mode 'uniq' \
+    --o-dereplicated-sequences "../db/silva138.1/silva138.1_nr99_dna_derep1.qza" \
+    --o-dereplicated-taxa "../db/silva138.1/silva138.1_nr99_tax_derep1.qza"
+```
+- Only a single representative seq (with taxonomy) will be retained. it's more efficient.
+- Many dbs contain repeated seqs because of multiple records. 
+
+.
+
+#### **Step 5: Extract primer-specific amplicon regions**
+
+This step trims the reference db to only the region targeted by the primers. After trimming, seqs are dereplicated again.
+
+```bash
+qiime feature-classifier extract-reads \
+    --i-sequences "../db/silva138.1/silva138.1_nr99_dna_derep1.qza" \
+    --p-f-primer GTGYCAGCMGCCGCGGTAA \
+    --p-r-primer GGACTACNVGGGTWTCTAAT \
+    --p-n-jobs 2 \
+    --p-read-orientation 'forward' \
+    --o-reads "../db/silva138.1/silva138.1_nr99_515F.806R_seqs.qza"
+
+qiime rescript dereplicate \
+    --i-sequences "../db/silva138.1/silva138.1_nr99_515F.806R_seqs.qza" \
+    --i-taxa "../db/silva138.1/silva138.1_nr99_tax_derep1.qza" \
+    --p-rank-handles 'silva' \
+    --p-mode 'uniq' \
+    --o-dereplicated-sequences "../db/silva138.1/silva138.1_nr99_515F.806R_seqs_derep.qza" \
+    --o-dereplicated-taxa  "../db/silva138.1/silva138.1_nr99_515F.806R_tax_derep.qza"
+```
+
+.
+
+#### **Step 6: Train the taxonomic classifier**
+
+This step trains a Naive Bayes taxonomic classifier using the primer-trimmed reference sequences and their taxonomy annotations.
+
+```bash
+qiime feature-classifier fit-classifier-naive-bayes \
+    --i-reference-reads "../db/silva138.1/silva138.1_nr99_515F.806R_seqs_derep.qza" \
+    --i-reference-taxonomy "../db/silva138.1/silva138.1_nr99_515F.806R_tax_derep.qza" \
+    --o-classifier "../db/silva138.1/silvaClassifier_nr99_515F.806R.qza"
+```    
+- The fit-classifier-naive-bayes method trains a machine learning classifier.
+- The relationship between: DNA seq patterns (k-mer frequencies) & taxonomy labels.
+
+✨ **ALL DONE! **✨    
+
+. 
+.
+
+### MothurPR2
+
+
+
+
+#### **Step 1: Prepare the PR2 reference database**
+
+The PR2 database must be downloaded, decompressed, and converted into a QIIME2 artifact (qza) before entering the RESCRIPt workflow.
+
+> You can grab the latest PR2 here: 
+> <https://github.com/pr2database/pr2database/releases>
+
+
+```bash
+gzip -d ../db/mothurPR2/*.gz
+    
+qiime tools import \
+    --type 'FeatureData[Sequence]' \
+    --input-path "./db/mothurPR2/pr2_version_5.0.0_SSU_mothur.fasta" \
+    --output-path "./db/mothurPR2/pr2_v5.0.0_dna.qza"
+
+cd ./db/mothurPR2
+nano pr2_version_4.14.0_SSU_mothur.tax # added two header values: 'Feature ID', 'Taxon'. Saved over
+cd ../..
+   
+qiime tools import \
+    --type 'FeatureData[Taxonomy]' \
+    --input-path "./db/mothurPR2/pr2_version_5.0.0_SSU_mothur.tax" \
+    --output-path "./db/mothurPR2/pr2_v5.0.0_tax.qza"
+    #--input-format HeaderlessTSVTaxonomyFormat
+```    
+- Decompress the downloaded PR2 files, you should have FASTA and taxonomy files
+- Now, you can shift these files into QIIME2 artifacts...
+- For the taxonomy file, it has to contain column headers compatible with QIIME2. You can see how I do this, using a command-line text editor. 
+
+✨ 
+✨ 
+**YAY! Now you are aligned with the Silva tutorial...**
+✨ 
+✨ 
+
+---
+
+
+#### **Step 2: Remove low quality sequences**
+
+```bash
+qiime rescript cull-seqs \
+    --i-sequences "./db/mothurPR2/pr2_v5.0.0_dna.qza" \
+    --o-clean-sequences "./db/mothurPR2/pr2_v5.0.0_dna_clean.qza"
+```
+- This will remove seqs with >5 ambiguous bases and >8 bases long homopolymer regions.
+- This cleans your db subset (ie. classifier)
+
+.
+
+#### **Step 3: Filter by expected length**
+
+```bash
+qiime rescript filter-seqs-length-by-taxon \
+    --i-sequences "./db/mothurPR2/pr2_v5.0.0_dna_clean.qza"\
+    --i-taxonomy "./db/mothurPR2/pr2_v5.0.0_tax.qza" \
+    --p-labels Archaea Bacteria Eukaryota \
+    --p-min-lens 900 1200 1400 \
+    --o-filtered-seqs "./db/mothurPR2/pr2_v5.0.0_dna_filter.qza" \
+    --o-discarded-seqs "./db/mothurPR2/pr2_v5.0.0_dna_discarded.qza"
+    # We will push discards into their own file
+```
+- PR2 contains archaea, bacteria, and eukaryotes, we don't want to entirely ignore archae, prok ASVs.
+- Archaea = 900bp; Bacteria = 1200bp; Eukaryotes = 1400bp.
+- Still keep discarded seqs. You can inspect what was removed if needed.
+
+.
+
+#### **Step 4: Dereplicate db seqs**
+
+This command removes duplicate sequences from the reference database.
+
+```bash
+qiime rescript dereplicate \
+    --i-sequences "./db/mothurPR2/pr2_v5.0.0_dna_filter.qza"  \
+    --i-taxa "./db/mothurPR2/pr2_v5.0.0_tax.qza"  \
+    --p-rank-handles 'disable' \
+    --p-mode 'uniq' \
+    --o-dereplicated-sequences "./db/mothurPR2/pr2_v5.0.0_dna_derep1.qza" \
+    --o-dereplicated-taxa "./db/mothurPR2/pr2_v5.0.0_tax_derep1.qza"
+```
+- Only a single representative seq (with taxonomy) will be retained. it's more efficient.
+- Many dbs contain repeated seqs because of multiple records. 
+
+.
+
+
+#### **Step 5: Extract primer-specific amplicon regions**
+
+This step trims the reference db to only the region targeted by the primers. After trimming, seqs are dereplicated again.
+
+```bash
+qiime feature-classifier extract-reads \
+    --i-sequences "./db/mothurPR2/pr2_v5.0.0_dna_derep1.qza" \
+    --p-f-primer CAGCAGCCGCGGTAATTCC \
+    --p-r-primer CCCGTGTTGAGTCAAATTAAGC \
+    --p-n-jobs 16 \
+    --p-read-orientation 'forward' \
+    --o-reads "./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs.qza"
+
+qiime rescript dereplicate \
+    --i-sequences "./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs.qza" \
+    --i-taxa "./db/mothurPR2/pr2_v5.0.0_tax_derep1.qza" \
+    --p-rank-handles 'disable' \
+    --p-mode 'uniq' \
+    --o-dereplicated-sequences "./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs_derep.qza" \
+    --o-dereplicated-taxa  "./db/mothurPR2/pr2_v5.0.0_566F.1200R_tax_derep.qza"
+```
+
+.
+
+#### **Step 6: Train the taxonomic classifier**
+
+This step trains a Naive Bayes taxonomic classifier using the primer-trimmed reference sequences and their taxonomy annotations.
+
+```bash
+qiime feature-classifier fit-classifier-naive-bayes \
+    --i-reference-reads "./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs_derep.qza" \
+    --i-reference-taxonomy "./db/mothurPR2/pr2_v5.0.0_566F.1200R_tax_derep.qza" \
+    --o-classifier "./db/mothurPR2/pr2Classifier_566F.1200R.qza"
+```    
+- The fit-classifier-naive-bayes method trains a machine learning classifier.
+- The relationship between: DNA seq patterns (k-mer frequencies) & taxonomy labels.
+
+
+✨ **ALL DONE! **✨   
+
+:::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

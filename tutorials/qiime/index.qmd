@@ -254,7 +254,7 @@ Congrats! We have a table of **representative sequences** and the **count table*
 
 For this step, you may run taxonomy classification either on an HPC system or on your local machine. Classification with the SILVA database can exceed typical RAM limits, which is why an HPC environment is generally preferred. But the step can be run locally if sufficient memory is available. The alignment will run slower and your computer will be working hard. 
 
-> Stop here! **You will need to pre-trained Classifier in QIIME2 before moving forward.** Refer to this tutorial to pre-train a classifier... [QIIME2 Classifer](qiime/scripts/dbTrainer.qmd){.btn .btn-primary .me-2}
+> Stop here! **You will need to pre-trained Classifier in QIIME2 before moving forward.** Refer to this tutorial to pre-train a classifier... [QIIME2 Classifer](./side.qmd){.btn .btn-primary .me-2}
 
 ::: {.panel-tabset}
 

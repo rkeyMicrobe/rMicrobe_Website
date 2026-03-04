@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Database Classifiers in Qiime2 – rMicrobe Website</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-7d99d32b79df9479f236071c1d12bb65.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-4c954aaf646480d91095ff6fbc10c9c6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="floating nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const darkModeDefault = authorPrefersDark;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">rMicrobe Website</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../bib/index.html"> 
+<span class="menu-text">Rebecca’s Site</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../tutorials/index.html"> 
+<span class="menu-text">rMicrobe Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../illustrations/index.html"> 
+<span class="menu-text">TinyLife Illustrations</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#required-materials" id="toc-required-materials" class="nav-link" data-scroll-target="#required-materials">Required Materials</a></li>
+  <li><a href="#pipeline" id="toc-pipeline" class="nav-link" data-scroll-target="#pipeline">Pipeline</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Database Classifiers in Qiime2</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This pipeline shows how to prepare a taxonomic reference databases for ASV taxonomy classification using QIIME2 and the RESCRIPt plugin. This is side-quest for the Qiime2 tutorial, if you don’t have a classifier yet.</p>
+<ul>
+<li><p><strong>Who is this for?</strong><br>
+Researchers preparing reference databases for amplicon taxonomic classification in QIIME2. This tutorial is useful for users who want to build primer-specific classifiers than relying on pre-trained databases.</p></li>
+<li><p><strong>Where can I run it?</strong><br>
+On a local machine (Linux, macOS) with a Conda-based QIIME2 installation, or on a remote HPC system where QIIME2 and RESCRIPt are installed.</p></li>
+<li><p><strong>What’s the end goal?</strong><br>
+To generate a trained Naive Bayes taxonomy classifiers (.qza) file tailored to specific primer pairs. These classifiers can then be used in downstream QIIME2 workflows to assign taxonomy to ASVs from amplicon sequencing datasets.</p></li>
+</ul>
+<blockquote class="blockquote">
+<p>Note! db = database; seq = sequences. You might see these shorthands pop-up during my rambles!</p>
+</blockquote>
+<hr>
+</section>
+<section id="required-materials" class="level2">
+<h2 class="anchored" data-anchor-id="required-materials">Required Materials</h2>
+<p>Here’s what you need to get started:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="EXPECTED INPUT FILES">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+EXPECTED INPUT FILES
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>File Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Already-Made Artifact</td>
+<td>.qza file of the db</td>
+</tr>
+<tr class="even">
+<td>Reference FASTA</td>
+<td>rRNA sequences for the db</td>
+</tr>
+<tr class="odd">
+<td>Reference taxonomy TSV</td>
+<td>Taxonomic annotations for each db sequence</td>
+</tr>
+<tr class="even">
+<td>Primer sequences</td>
+<td>User should know</td>
+</tr>
+<tr class="odd">
+<td>QIIME2 environment</td>
+<td>Activated Conda environment</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>And a list of required packages:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="REQUIRED SOFTWARE">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+REQUIRED SOFTWARE
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Software</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>QIIME2</td>
+<td>≥ 2023.x</td>
+<td>Main package for processing</td>
+</tr>
+<tr class="even">
+<td>RESCRIPt</td>
+<td>latest</td>
+<td>Reference database curation and filtering</td>
+</tr>
+<tr class="odd">
+<td>Python / Conda</td>
+<td>≥ 3.8</td>
+<td>Dependency for QIIME2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="pipeline">Pipeline</h2>
+<p>The following databases are shown for this tutorial.</p>
+<ul>
+<li><strong>Silva</strong>: There’s a prepared .qza file available via the RESCRIPt plugin.</li>
+<li><strong>PR2</strong>: We need to make a .qza file from scratch.</li>
+</ul>
+<p><strong>Choose the one you prefer:</strong></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Databases Used">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Databases Used
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Database</th>
+<th>Version</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SILVA SSURef_NR99</td>
+<td>138.1</td>
+<td>16S rRNA reference sequences</td>
+</tr>
+<tr class="even">
+<td>PR2 (Mothur format)</td>
+<td>v5.0.0</td>
+<td>Protist 18S reference sequences</td>
+</tr>
+<tr class="odd">
+<td>Primer sequences</td>
+<td>user provided</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Silva</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">MothurPR2</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<section id="step-1-retrieve-the-silva-db.-covert-rna-to-dna-seqs." class="level4">
+<h4 class="anchored" data-anchor-id="step-1-retrieve-the-silva-db.-covert-rna-to-dna-seqs."><strong>Step 1: Retrieve the Silva db. Covert RNA to DNA seqs.</strong></h4>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="ex">qiime</span> rescript get-silva-data <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>    <span class="at">--p-version</span> <span class="st">'138.1'</span> <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>    <span class="at">--p-target</span> <span class="st">'SSURef_NR99'</span> <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="at">--p-include-species-labels</span> <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>    <span class="at">--o-silva-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_rna.qza"</span> <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>    <span class="at">--o-silva-taxonomy</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax.qza"</span>  </span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="ex">qiime</span> rescript reverse-transcribe <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>    <span class="at">--i-rna-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_rna.qza"</span> <span class="dt">\</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>    <span class="at">--o-dna-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>This uses the non-redundant 99% clustered small subunit (SSU) rRNA database.</li>
+<li>You’re outputs will be an artifact contain reference seqs and taxonomic annotations.</li>
+<li>QIIME2 classifiers require DNA sequences to proceed.</li>
+</ul>
+<p>.</p>
+</section>
+<section id="step-2-remove-low-quality-sequences" class="level4">
+<h4 class="anchored" data-anchor-id="step-2-remove-low-quality-sequences"><strong>Step 2: Remove low quality sequences</strong></h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">qiime</span> rescript cull-seqs <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna.qza"</span> <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    <span class="at">--o-clean-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_clean.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>This will remove seqs with &gt;5 ambiguous bases and &gt;8 bases long homopolymer regions.</li>
+<li>This cleans your db subset (ie. classifier)</li>
+</ul>
+</section>
+<section id="step-3-filter-by-expected-length" class="level4">
+<h4 class="anchored" data-anchor-id="step-3-filter-by-expected-length"><strong>Step 3: Filter by expected length</strong></h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">qiime</span> rescript filter-seqs-length-by-taxon <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_clean.qza"</span><span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    <span class="at">--i-taxonomy</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax.qza"</span>  <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="at">--p-labels</span> Archaea Bacteria Eukaryota <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="at">--p-min-lens</span> 900 1200 1400 <span class="dt">\</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>    <span class="at">--o-filtered-seqs</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_filter.qza"</span> <span class="dt">\</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>    <span class="at">--o-discarded-seqs</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_discard.qza"</span> </span>
+<span id="cb3-8"><a href="#cb3-8"></a>    <span class="co"># We will push discards into their own file</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Silva contains archaea, bacteria, and eukaryotes, we don’t want to entirely ignore archae, euk ASVs.</li>
+<li>Archaea = 900bp; Bacteria = 1200bp; Eukaryotes = 1400bp.</li>
+<li>Still keep discarded seqs. You can inspect what was removed if needed.</li>
+</ul>
+<p>.</p>
+</section>
+<section id="step-4-dereplicate-db-seqs" class="level4">
+<h4 class="anchored" data-anchor-id="step-4-dereplicate-db-seqs"><strong>Step 4: Dereplicate db seqs</strong></h4>
+<p>This command removes duplicate sequences from the reference database.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_filter.qza"</span>  <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>    <span class="at">--i-taxa</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax.qza"</span> <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="at">--p-rank-handles</span> <span class="st">'silva'</span> <span class="dt">\</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="at">--o-dereplicated-taxa</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax_derep1.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Only a single representative seq (with taxonomy) will be retained. it’s more efficient.</li>
+<li>Many dbs contain repeated seqs because of multiple records.</li>
+</ul>
+<p>.</p>
+</section>
+<section id="step-5-extract-primer-specific-amplicon-regions" class="level4">
+<h4 class="anchored" data-anchor-id="step-5-extract-primer-specific-amplicon-regions"><strong>Step 5: Extract primer-specific amplicon regions</strong></h4>
+<p>This step trims the reference db to only the region targeted by the primers. After trimming, seqs are dereplicated again.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="ex">qiime</span> feature-classifier extract-reads <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="at">--p-f-primer</span> GTGYCAGCMGCCGCGGTAA <span class="dt">\</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="at">--p-r-primer</span> GGACTACNVGGGTWTCTAAT <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="at">--p-n-jobs</span> 2 <span class="dt">\</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="at">--p-read-orientation</span> <span class="st">'forward'</span> <span class="dt">\</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="at">--o-reads</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs.qza"</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a>    <span class="at">--i-taxa</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>    <span class="at">--p-rank-handles</span> <span class="st">'silva'</span> <span class="dt">\</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a>    <span class="at">--o-dereplicated-taxa</span>  <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_tax_derep.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>.</p>
+</section>
+<section id="step-6-train-the-taxonomic-classifier" class="level4">
+<h4 class="anchored" data-anchor-id="step-6-train-the-taxonomic-classifier"><strong>Step 6: Train the taxonomic classifier</strong></h4>
+<p>This step trains a Naive Bayes taxonomic classifier using the primer-trimmed reference sequences and their taxonomy annotations.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="ex">qiime</span> feature-classifier fit-classifier-naive-bayes <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>    <span class="at">--i-reference-reads</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>    <span class="at">--i-reference-taxonomy</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_tax_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="at">--o-classifier</span> <span class="st">"../db/silva138.1/silvaClassifier_nr99_515F.806R.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>The fit-classifier-naive-bayes method trains a machine learning classifier.</li>
+<li>The relationship between: DNA seq patterns (k-mer frequencies) &amp; taxonomy labels.</li>
+</ul>
+<p>✨ <strong>ALL DONE! </strong>✨</p>
+<p>. .</p>
+</section>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<section id="step-1-prepare-the-pr2-reference-database" class="level4">
+<h4 class="anchored" data-anchor-id="step-1-prepare-the-pr2-reference-database"><strong>Step 1: Prepare the PR2 reference database</strong></h4>
+<p>The PR2 database must be downloaded, decompressed, and converted into a QIIME2 artifact (qza) before entering the RESCRIPt workflow.</p>
+<blockquote class="blockquote">
+<p>You can grab the latest PR2 here: <a href="https://github.com/pr2database/pr2database/releases" class="uri">https://github.com/pr2database/pr2database/releases</a></p>
+</blockquote>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">gzip</span> <span class="at">-d</span> ../db/mothurPR2/<span class="pp">*</span>.gz</span>
+<span id="cb7-2"><a href="#cb7-2"></a>    </span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="ex">qiime</span> tools import <span class="dt">\</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>    <span class="at">--type</span> <span class="st">'FeatureData[Sequence]'</span> <span class="dt">\</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>    <span class="at">--input-path</span> <span class="st">"./db/mothurPR2/pr2_version_5.0.0_SSU_mothur.fasta"</span> <span class="dt">\</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>    <span class="at">--output-path</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna.qza"</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="bu">cd</span> ./db/mothurPR2</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="fu">nano</span> pr2_version_4.14.0_SSU_mothur.tax <span class="co"># added two header values: 'Feature ID', 'Taxon'. Saved over</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="bu">cd</span> ../..</span>
+<span id="cb7-11"><a href="#cb7-11"></a>   </span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="ex">qiime</span> tools import <span class="dt">\</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>    <span class="at">--type</span> <span class="st">'FeatureData[Taxonomy]'</span> <span class="dt">\</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>    <span class="at">--input-path</span> <span class="st">"./db/mothurPR2/pr2_version_5.0.0_SSU_mothur.tax"</span> <span class="dt">\</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>    <span class="at">--output-path</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax.qza"</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>    <span class="co">#--input-format HeaderlessTSVTaxonomyFormat</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Decompress the downloaded PR2 files, you should have FASTA and taxonomy files</li>
+<li>Now, you can shift these files into QIIME2 artifacts…</li>
+<li>For the taxonomy file, it has to contain column headers compatible with QIIME2. You can see how I do this, using a command-line text editor.</li>
+</ul>
+<p>✨ ✨ <strong>YAY! Now you are aligned with the Silva tutorial…</strong> ✨ ✨</p>
+<hr>
+</section>
+<section id="step-2-remove-low-quality-sequences-1" class="level4">
+<h4 class="anchored" data-anchor-id="step-2-remove-low-quality-sequences-1"><strong>Step 2: Remove low quality sequences</strong></h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="ex">qiime</span> rescript cull-seqs <span class="dt">\</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna.qza"</span> <span class="dt">\</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>    <span class="at">--o-clean-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_clean.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>This will remove seqs with &gt;5 ambiguous bases and &gt;8 bases long homopolymer regions.</li>
+<li>This cleans your db subset (ie. classifier)</li>
+</ul>
+<p>.</p>
+</section>
+<section id="step-3-filter-by-expected-length-1" class="level4">
+<h4 class="anchored" data-anchor-id="step-3-filter-by-expected-length-1"><strong>Step 3: Filter by expected length</strong></h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a><span class="ex">qiime</span> rescript filter-seqs-length-by-taxon <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_clean.qza"</span><span class="dt">\</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>    <span class="at">--i-taxonomy</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax.qza"</span> <span class="dt">\</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>    <span class="at">--p-labels</span> Archaea Bacteria Eukaryota <span class="dt">\</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>    <span class="at">--p-min-lens</span> 900 1200 1400 <span class="dt">\</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>    <span class="at">--o-filtered-seqs</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_filter.qza"</span> <span class="dt">\</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>    <span class="at">--o-discarded-seqs</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_discarded.qza"</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a>    <span class="co"># We will push discards into their own file</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>PR2 contains archaea, bacteria, and eukaryotes, we don’t want to entirely ignore archae, prok ASVs.</li>
+<li>Archaea = 900bp; Bacteria = 1200bp; Eukaryotes = 1400bp.</li>
+<li>Still keep discarded seqs. You can inspect what was removed if needed.</li>
+</ul>
+<p>.</p>
+</section>
+<section id="step-4-dereplicate-db-seqs-1" class="level4">
+<h4 class="anchored" data-anchor-id="step-4-dereplicate-db-seqs-1"><strong>Step 4: Dereplicate db seqs</strong></h4>
+<p>This command removes duplicate sequences from the reference database.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_filter.qza"</span>  <span class="dt">\</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>    <span class="at">--i-taxa</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax.qza"</span>  <span class="dt">\</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>    <span class="at">--p-rank-handles</span> <span class="st">'disable'</span> <span class="dt">\</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a>    <span class="at">--o-dereplicated-taxa</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax_derep1.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Only a single representative seq (with taxonomy) will be retained. it’s more efficient.</li>
+<li>Many dbs contain repeated seqs because of multiple records.</li>
+</ul>
+<p>.</p>
+</section>
+<section id="step-5-extract-primer-specific-amplicon-regions-1" class="level4">
+<h4 class="anchored" data-anchor-id="step-5-extract-primer-specific-amplicon-regions-1"><strong>Step 5: Extract primer-specific amplicon regions</strong></h4>
+<p>This step trims the reference db to only the region targeted by the primers. After trimming, seqs are dereplicated again.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1"></a><span class="ex">qiime</span> feature-classifier extract-reads <span class="dt">\</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>    <span class="at">--p-f-primer</span> CAGCAGCCGCGGTAATTCC <span class="dt">\</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="at">--p-r-primer</span> CCCGTGTTGAGTCAAATTAAGC <span class="dt">\</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>    <span class="at">--p-n-jobs</span> 16 <span class="dt">\</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>    <span class="at">--p-read-orientation</span> <span class="st">'forward'</span> <span class="dt">\</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>    <span class="at">--o-reads</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs.qza"</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a>    <span class="at">--i-taxa</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a>    <span class="at">--p-rank-handles</span> <span class="st">'disable'</span> <span class="dt">\</span></span>
+<span id="cb11-13"><a href="#cb11-13"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb11-15"><a href="#cb11-15"></a>    <span class="at">--o-dereplicated-taxa</span>  <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_tax_derep.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>.</p>
+</section>
+<section id="step-6-train-the-taxonomic-classifier-1" class="level4">
+<h4 class="anchored" data-anchor-id="step-6-train-the-taxonomic-classifier-1"><strong>Step 6: Train the taxonomic classifier</strong></h4>
+<p>This step trains a Naive Bayes taxonomic classifier using the primer-trimmed reference sequences and their taxonomy annotations.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1"></a><span class="ex">qiime</span> feature-classifier fit-classifier-naive-bayes <span class="dt">\</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>    <span class="at">--i-reference-reads</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>    <span class="at">--i-reference-taxonomy</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_tax_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>    <span class="at">--o-classifier</span> <span class="st">"./db/mothurPR2/pr2Classifier_566F.1200R.qza"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>The fit-classifier-naive-bayes method trains a machine learning classifier.</li>
+<li>The relationship between: DNA seq patterns (k-mer frequencies) &amp; taxonomy labels.</li>
+</ul>
+<p>✨ <strong>ALL DONE! </strong>✨</p>
+</section>
+</div>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">---</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="an">title:</span><span class="co"> "Database Classifiers in Qiime2"</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="an">format:</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co">  html:</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">    toc: true</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="co">    toc-location: left</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="co">    code-fold: true</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="co">    code-tools: true</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="an">execute:</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="co">  echo: true</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="co">  warning: false</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="co">  message: false</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="co">---</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="fu">## Introduction</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a></span>
+<span id="cb13-18"><a href="#cb13-18"></a>This pipeline shows how to prepare a taxonomic reference databases for ASV taxonomy classification using QIIME2 and the RESCRIPt plugin. This is side-quest for the Qiime2 tutorial, if you don't have a classifier yet.  </span>
+<span id="cb13-19"><a href="#cb13-19"></a></span>
+<span id="cb13-20"><a href="#cb13-20"></a><span class="ss">- </span>**Who is this for?**  </span>
+<span id="cb13-21"><a href="#cb13-21"></a>Researchers preparing reference databases for amplicon taxonomic classification in QIIME2. This tutorial is useful for users who want to build primer-specific classifiers than relying on pre-trained databases.</span>
+<span id="cb13-22"><a href="#cb13-22"></a></span>
+<span id="cb13-23"><a href="#cb13-23"></a><span class="ss">- </span>**Where can I run it?**  </span>
+<span id="cb13-24"><a href="#cb13-24"></a>On a local machine (Linux, macOS) with a Conda-based QIIME2 installation, or on a remote HPC system where QIIME2 and RESCRIPt are installed.</span>
+<span id="cb13-25"><a href="#cb13-25"></a></span>
+<span id="cb13-26"><a href="#cb13-26"></a><span class="ss">- </span>**What's the end goal?**  </span>
+<span id="cb13-27"><a href="#cb13-27"></a>To generate a trained Naive Bayes taxonomy classifiers (.qza) file tailored to specific primer pairs. These classifiers can then be used in downstream QIIME2 workflows to assign taxonomy to ASVs from amplicon sequencing datasets.</span>
+<span id="cb13-28"><a href="#cb13-28"></a></span>
+<span id="cb13-29"><a href="#cb13-29"></a><span class="at">&gt; Note! db = database; seq = sequences. </span></span>
+<span id="cb13-30"><a href="#cb13-30"></a><span class="at">&gt; You might see these shorthands pop-up during my rambles! </span></span>
+<span id="cb13-31"><a href="#cb13-31"></a></span>
+<span id="cb13-32"><a href="#cb13-32"></a>---</span>
+<span id="cb13-33"><a href="#cb13-33"></a></span>
+<span id="cb13-34"><a href="#cb13-34"></a><span class="fu">## Required Materials</span></span>
+<span id="cb13-35"><a href="#cb13-35"></a></span>
+<span id="cb13-36"><a href="#cb13-36"></a>Here's what you need to get started:</span>
+<span id="cb13-37"><a href="#cb13-37"></a></span>
+<span id="cb13-38"><a href="#cb13-38"></a>::: {.callout-note title="EXPECTED INPUT FILES"}</span>
+<span id="cb13-39"><a href="#cb13-39"></a></span>
+<span id="cb13-40"><a href="#cb13-40"></a><span class="pp">|</span> File Type <span class="pp">|</span> Description <span class="pp">|</span></span>
+<span id="cb13-41"><a href="#cb13-41"></a><span class="pp">|-----------|-------------|</span></span>
+<span id="cb13-42"><a href="#cb13-42"></a><span class="pp">|</span> Already-Made Artifact <span class="pp">|</span> .qza file of the db <span class="pp">|</span></span>
+<span id="cb13-43"><a href="#cb13-43"></a><span class="pp">|</span> Reference FASTA <span class="pp">|</span> rRNA sequences for the db <span class="pp">|</span></span>
+<span id="cb13-44"><a href="#cb13-44"></a><span class="pp">|</span> Reference taxonomy TSV <span class="pp">|</span> Taxonomic annotations for each db sequence <span class="pp">|</span></span>
+<span id="cb13-45"><a href="#cb13-45"></a><span class="pp">|</span> Primer sequences <span class="pp">|</span> User should know <span class="pp">|</span></span>
+<span id="cb13-46"><a href="#cb13-46"></a><span class="pp">|</span> QIIME2 environment <span class="pp">|</span> Activated Conda environment <span class="pp">|</span></span>
+<span id="cb13-47"><a href="#cb13-47"></a></span>
+<span id="cb13-48"><a href="#cb13-48"></a>:::</span>
+<span id="cb13-49"><a href="#cb13-49"></a></span>
+<span id="cb13-50"><a href="#cb13-50"></a>And a list of required packages: </span>
+<span id="cb13-51"><a href="#cb13-51"></a></span>
+<span id="cb13-52"><a href="#cb13-52"></a>::: {.callout-note title="REQUIRED SOFTWARE"}</span>
+<span id="cb13-53"><a href="#cb13-53"></a></span>
+<span id="cb13-54"><a href="#cb13-54"></a><span class="pp">|</span> Software <span class="pp">|</span> Version <span class="pp">|</span> Purpose <span class="pp">|</span></span>
+<span id="cb13-55"><a href="#cb13-55"></a><span class="pp">|---------|---------|--------|</span></span>
+<span id="cb13-56"><a href="#cb13-56"></a><span class="pp">|</span> QIIME2 <span class="pp">|</span> ≥ 2023.x <span class="pp">|</span>  Main package for processing <span class="pp">|</span></span>
+<span id="cb13-57"><a href="#cb13-57"></a><span class="pp">|</span> RESCRIPt <span class="pp">|</span> latest <span class="pp">|</span> Reference database curation and filtering <span class="pp">|</span></span>
+<span id="cb13-58"><a href="#cb13-58"></a><span class="pp">|</span> Python / Conda <span class="pp">|</span> ≥ 3.8 <span class="pp">|</span> Dependency for QIIME2 <span class="pp">|</span></span>
+<span id="cb13-59"><a href="#cb13-59"></a></span>
+<span id="cb13-60"><a href="#cb13-60"></a>:::</span>
+<span id="cb13-61"><a href="#cb13-61"></a></span>
+<span id="cb13-62"><a href="#cb13-62"></a>---</span>
+<span id="cb13-63"><a href="#cb13-63"></a></span>
+<span id="cb13-64"><a href="#cb13-64"></a><span class="fu">## Pipeline</span></span>
+<span id="cb13-65"><a href="#cb13-65"></a></span>
+<span id="cb13-66"><a href="#cb13-66"></a>The following databases are shown for this tutorial. </span>
+<span id="cb13-67"><a href="#cb13-67"></a></span>
+<span id="cb13-68"><a href="#cb13-68"></a><span class="ss">- </span>**Silva**: There's a prepared .qza file available via the RESCRIPt plugin.</span>
+<span id="cb13-69"><a href="#cb13-69"></a><span class="ss">- </span>**PR2**: We need to make a .qza file from scratch.</span>
+<span id="cb13-70"><a href="#cb13-70"></a></span>
+<span id="cb13-71"><a href="#cb13-71"></a>**Choose the one you prefer:**</span>
+<span id="cb13-72"><a href="#cb13-72"></a></span>
+<span id="cb13-73"><a href="#cb13-73"></a>::: {.callout-note title="Databases Used"}</span>
+<span id="cb13-74"><a href="#cb13-74"></a></span>
+<span id="cb13-75"><a href="#cb13-75"></a><span class="pp">|</span> Database <span class="pp">|</span> Version <span class="pp">|</span> Notes <span class="pp">|</span></span>
+<span id="cb13-76"><a href="#cb13-76"></a><span class="pp">|---------|---------|--------|</span></span>
+<span id="cb13-77"><a href="#cb13-77"></a><span class="pp">|</span> SILVA SSURef_NR99 <span class="pp">|</span> 138.1 <span class="pp">|</span> 16S rRNA reference sequences <span class="pp">|</span></span>
+<span id="cb13-78"><a href="#cb13-78"></a><span class="pp">|</span> PR2 (Mothur format) <span class="pp">|</span> v5.0.0 <span class="pp">|</span> Protist 18S reference sequences <span class="pp">|</span></span>
+<span id="cb13-79"><a href="#cb13-79"></a><span class="pp">|</span> Primer sequences <span class="pp">|</span> user provided <span class="pp">|</span> NA <span class="pp">|</span></span>
+<span id="cb13-80"><a href="#cb13-80"></a></span>
+<span id="cb13-81"><a href="#cb13-81"></a>:::</span>
+<span id="cb13-82"><a href="#cb13-82"></a></span>
+<span id="cb13-83"><a href="#cb13-83"></a></span>
+<span id="cb13-84"><a href="#cb13-84"></a>::: {.panel-tabset}</span>
+<span id="cb13-85"><a href="#cb13-85"></a></span>
+<span id="cb13-86"><a href="#cb13-86"></a><span class="fu">### Silva</span></span>
+<span id="cb13-87"><a href="#cb13-87"></a></span>
+<span id="cb13-88"><a href="#cb13-88"></a><span class="fu">#### **Step 1: Retrieve the Silva db. Covert RNA to DNA seqs.**</span></span>
+<span id="cb13-89"><a href="#cb13-89"></a></span>
+<span id="cb13-90"><a href="#cb13-90"></a><span class="in">```bash</span></span>
+<span id="cb13-91"><a href="#cb13-91"></a><span class="ex">qiime</span> rescript get-silva-data <span class="dt">\</span></span>
+<span id="cb13-92"><a href="#cb13-92"></a>    <span class="at">--p-version</span> <span class="st">'138.1'</span> <span class="dt">\</span></span>
+<span id="cb13-93"><a href="#cb13-93"></a>    <span class="at">--p-target</span> <span class="st">'SSURef_NR99'</span> <span class="dt">\</span></span>
+<span id="cb13-94"><a href="#cb13-94"></a>    <span class="at">--p-include-species-labels</span> <span class="dt">\</span></span>
+<span id="cb13-95"><a href="#cb13-95"></a>    <span class="at">--o-silva-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_rna.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-96"><a href="#cb13-96"></a>    <span class="at">--o-silva-taxonomy</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax.qza"</span>  </span>
+<span id="cb13-97"><a href="#cb13-97"></a></span>
+<span id="cb13-98"><a href="#cb13-98"></a><span class="ex">qiime</span> rescript reverse-transcribe <span class="dt">\</span></span>
+<span id="cb13-99"><a href="#cb13-99"></a>    <span class="at">--i-rna-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_rna.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-100"><a href="#cb13-100"></a>    <span class="at">--o-dna-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna.qza"</span></span>
+<span id="cb13-101"><a href="#cb13-101"></a><span class="in">```</span></span>
+<span id="cb13-102"><a href="#cb13-102"></a><span class="ss">- </span>This uses the non-redundant 99% clustered small subunit (SSU) rRNA database.</span>
+<span id="cb13-103"><a href="#cb13-103"></a><span class="ss">- </span>You're outputs will be an artifact contain reference seqs and taxonomic annotations.</span>
+<span id="cb13-104"><a href="#cb13-104"></a><span class="ss">- </span>QIIME2 classifiers require DNA sequences to proceed.</span>
+<span id="cb13-105"><a href="#cb13-105"></a></span>
+<span id="cb13-106"><a href="#cb13-106"></a>.</span>
+<span id="cb13-107"><a href="#cb13-107"></a></span>
+<span id="cb13-108"><a href="#cb13-108"></a><span class="fu">#### **Step 2: Remove low quality sequences**</span></span>
+<span id="cb13-109"><a href="#cb13-109"></a> </span>
+<span id="cb13-110"><a href="#cb13-110"></a><span class="in">```bash</span></span>
+<span id="cb13-111"><a href="#cb13-111"></a><span class="ex">qiime</span> rescript cull-seqs <span class="dt">\</span></span>
+<span id="cb13-112"><a href="#cb13-112"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-113"><a href="#cb13-113"></a>    <span class="at">--o-clean-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_clean.qza"</span></span>
+<span id="cb13-114"><a href="#cb13-114"></a><span class="in">```</span></span>
+<span id="cb13-115"><a href="#cb13-115"></a><span class="ss">- </span>This will remove seqs with &gt;5 ambiguous bases and &gt;8 bases long homopolymer regions.</span>
+<span id="cb13-116"><a href="#cb13-116"></a><span class="ss">- </span>This cleans your db subset (ie. classifier)</span>
+<span id="cb13-117"><a href="#cb13-117"></a></span>
+<span id="cb13-118"><a href="#cb13-118"></a><span class="fu">#### **Step 3: Filter by expected length**</span></span>
+<span id="cb13-119"><a href="#cb13-119"></a><span class="in">```bash</span></span>
+<span id="cb13-120"><a href="#cb13-120"></a><span class="ex">qiime</span> rescript filter-seqs-length-by-taxon <span class="dt">\</span></span>
+<span id="cb13-121"><a href="#cb13-121"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_clean.qza"</span><span class="dt">\</span></span>
+<span id="cb13-122"><a href="#cb13-122"></a>    <span class="at">--i-taxonomy</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax.qza"</span>  <span class="dt">\</span></span>
+<span id="cb13-123"><a href="#cb13-123"></a>    <span class="at">--p-labels</span> Archaea Bacteria Eukaryota <span class="dt">\</span></span>
+<span id="cb13-124"><a href="#cb13-124"></a>    <span class="at">--p-min-lens</span> 900 1200 1400 <span class="dt">\</span></span>
+<span id="cb13-125"><a href="#cb13-125"></a>    <span class="at">--o-filtered-seqs</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_filter.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-126"><a href="#cb13-126"></a>    <span class="at">--o-discarded-seqs</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_discard.qza"</span> </span>
+<span id="cb13-127"><a href="#cb13-127"></a>    <span class="co"># We will push discards into their own file</span></span>
+<span id="cb13-128"><a href="#cb13-128"></a><span class="in">```</span></span>
+<span id="cb13-129"><a href="#cb13-129"></a><span class="ss">- </span>Silva contains archaea, bacteria, and eukaryotes, we don't want to entirely ignore archae, euk ASVs.</span>
+<span id="cb13-130"><a href="#cb13-130"></a><span class="ss">- </span>Archaea = 900bp; Bacteria = 1200bp; Eukaryotes = 1400bp.</span>
+<span id="cb13-131"><a href="#cb13-131"></a><span class="ss">- </span>Still keep discarded seqs. You can inspect what was removed if needed.</span>
+<span id="cb13-132"><a href="#cb13-132"></a></span>
+<span id="cb13-133"><a href="#cb13-133"></a>.</span>
+<span id="cb13-134"><a href="#cb13-134"></a></span>
+<span id="cb13-135"><a href="#cb13-135"></a><span class="fu">#### **Step 4: Dereplicate db seqs**</span></span>
+<span id="cb13-136"><a href="#cb13-136"></a></span>
+<span id="cb13-137"><a href="#cb13-137"></a>This command removes duplicate sequences from the reference database.</span>
+<span id="cb13-138"><a href="#cb13-138"></a></span>
+<span id="cb13-139"><a href="#cb13-139"></a><span class="in">```bash</span></span>
+<span id="cb13-140"><a href="#cb13-140"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb13-141"><a href="#cb13-141"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_filter.qza"</span>  <span class="dt">\</span></span>
+<span id="cb13-142"><a href="#cb13-142"></a>    <span class="at">--i-taxa</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-143"><a href="#cb13-143"></a>    <span class="at">--p-rank-handles</span> <span class="st">'silva'</span> <span class="dt">\</span></span>
+<span id="cb13-144"><a href="#cb13-144"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb13-145"><a href="#cb13-145"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-146"><a href="#cb13-146"></a>    <span class="at">--o-dereplicated-taxa</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax_derep1.qza"</span></span>
+<span id="cb13-147"><a href="#cb13-147"></a><span class="in">```</span></span>
+<span id="cb13-148"><a href="#cb13-148"></a><span class="ss">- </span>Only a single representative seq (with taxonomy) will be retained. it's more efficient.</span>
+<span id="cb13-149"><a href="#cb13-149"></a><span class="ss">- </span>Many dbs contain repeated seqs because of multiple records. </span>
+<span id="cb13-150"><a href="#cb13-150"></a></span>
+<span id="cb13-151"><a href="#cb13-151"></a>.</span>
+<span id="cb13-152"><a href="#cb13-152"></a></span>
+<span id="cb13-153"><a href="#cb13-153"></a><span class="fu">#### **Step 5: Extract primer-specific amplicon regions**</span></span>
+<span id="cb13-154"><a href="#cb13-154"></a></span>
+<span id="cb13-155"><a href="#cb13-155"></a>This step trims the reference db to only the region targeted by the primers. After trimming, seqs are dereplicated again.</span>
+<span id="cb13-156"><a href="#cb13-156"></a></span>
+<span id="cb13-157"><a href="#cb13-157"></a><span class="in">```bash</span></span>
+<span id="cb13-158"><a href="#cb13-158"></a><span class="ex">qiime</span> feature-classifier extract-reads <span class="dt">\</span></span>
+<span id="cb13-159"><a href="#cb13-159"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-160"><a href="#cb13-160"></a>    <span class="at">--p-f-primer</span> GTGYCAGCMGCCGCGGTAA <span class="dt">\</span></span>
+<span id="cb13-161"><a href="#cb13-161"></a>    <span class="at">--p-r-primer</span> GGACTACNVGGGTWTCTAAT <span class="dt">\</span></span>
+<span id="cb13-162"><a href="#cb13-162"></a>    <span class="at">--p-n-jobs</span> 2 <span class="dt">\</span></span>
+<span id="cb13-163"><a href="#cb13-163"></a>    <span class="at">--p-read-orientation</span> <span class="st">'forward'</span> <span class="dt">\</span></span>
+<span id="cb13-164"><a href="#cb13-164"></a>    <span class="at">--o-reads</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs.qza"</span></span>
+<span id="cb13-165"><a href="#cb13-165"></a></span>
+<span id="cb13-166"><a href="#cb13-166"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb13-167"><a href="#cb13-167"></a>    <span class="at">--i-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-168"><a href="#cb13-168"></a>    <span class="at">--i-taxa</span> <span class="st">"../db/silva138.1/silva138.1_nr99_tax_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-169"><a href="#cb13-169"></a>    <span class="at">--p-rank-handles</span> <span class="st">'silva'</span> <span class="dt">\</span></span>
+<span id="cb13-170"><a href="#cb13-170"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb13-171"><a href="#cb13-171"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-172"><a href="#cb13-172"></a>    <span class="at">--o-dereplicated-taxa</span>  <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_tax_derep.qza"</span></span>
+<span id="cb13-173"><a href="#cb13-173"></a><span class="in">```</span></span>
+<span id="cb13-174"><a href="#cb13-174"></a></span>
+<span id="cb13-175"><a href="#cb13-175"></a>.</span>
+<span id="cb13-176"><a href="#cb13-176"></a></span>
+<span id="cb13-177"><a href="#cb13-177"></a><span class="fu">#### **Step 6: Train the taxonomic classifier**</span></span>
+<span id="cb13-178"><a href="#cb13-178"></a></span>
+<span id="cb13-179"><a href="#cb13-179"></a>This step trains a Naive Bayes taxonomic classifier using the primer-trimmed reference sequences and their taxonomy annotations.</span>
+<span id="cb13-180"><a href="#cb13-180"></a></span>
+<span id="cb13-181"><a href="#cb13-181"></a><span class="in">```bash</span></span>
+<span id="cb13-182"><a href="#cb13-182"></a><span class="ex">qiime</span> feature-classifier fit-classifier-naive-bayes <span class="dt">\</span></span>
+<span id="cb13-183"><a href="#cb13-183"></a>    <span class="at">--i-reference-reads</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-184"><a href="#cb13-184"></a>    <span class="at">--i-reference-taxonomy</span> <span class="st">"../db/silva138.1/silva138.1_nr99_515F.806R_tax_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-185"><a href="#cb13-185"></a>    <span class="at">--o-classifier</span> <span class="st">"../db/silva138.1/silvaClassifier_nr99_515F.806R.qza"</span></span>
+<span id="cb13-186"><a href="#cb13-186"></a><span class="in">```</span>    </span>
+<span id="cb13-187"><a href="#cb13-187"></a><span class="ss">- </span>The fit-classifier-naive-bayes method trains a machine learning classifier.</span>
+<span id="cb13-188"><a href="#cb13-188"></a><span class="ss">- </span>The relationship between: DNA seq patterns (k-mer frequencies) &amp; taxonomy labels.</span>
+<span id="cb13-189"><a href="#cb13-189"></a></span>
+<span id="cb13-190"><a href="#cb13-190"></a>✨ **ALL DONE! **✨    </span>
+<span id="cb13-191"><a href="#cb13-191"></a></span>
+<span id="cb13-192"><a href="#cb13-192"></a>. </span>
+<span id="cb13-193"><a href="#cb13-193"></a>.</span>
+<span id="cb13-194"><a href="#cb13-194"></a></span>
+<span id="cb13-195"><a href="#cb13-195"></a><span class="fu">### MothurPR2</span></span>
+<span id="cb13-196"><a href="#cb13-196"></a></span>
+<span id="cb13-197"><a href="#cb13-197"></a></span>
+<span id="cb13-198"><a href="#cb13-198"></a></span>
+<span id="cb13-199"><a href="#cb13-199"></a></span>
+<span id="cb13-200"><a href="#cb13-200"></a><span class="fu">#### **Step 1: Prepare the PR2 reference database**</span></span>
+<span id="cb13-201"><a href="#cb13-201"></a></span>
+<span id="cb13-202"><a href="#cb13-202"></a>The PR2 database must be downloaded, decompressed, and converted into a QIIME2 artifact (qza) before entering the RESCRIPt workflow.</span>
+<span id="cb13-203"><a href="#cb13-203"></a></span>
+<span id="cb13-204"><a href="#cb13-204"></a><span class="at">&gt; You can grab the latest PR2 here: </span></span>
+<span id="cb13-205"><a href="#cb13-205"></a><span class="at">&gt; </span><span class="ot">&lt;https://github.com/pr2database/pr2database/releases&gt;</span></span>
+<span id="cb13-206"><a href="#cb13-206"></a></span>
+<span id="cb13-207"><a href="#cb13-207"></a></span>
+<span id="cb13-208"><a href="#cb13-208"></a><span class="in">```bash</span></span>
+<span id="cb13-209"><a href="#cb13-209"></a><span class="fu">gzip</span> <span class="at">-d</span> ../db/mothurPR2/<span class="pp">*</span>.gz</span>
+<span id="cb13-210"><a href="#cb13-210"></a>    </span>
+<span id="cb13-211"><a href="#cb13-211"></a><span class="ex">qiime</span> tools import <span class="dt">\</span></span>
+<span id="cb13-212"><a href="#cb13-212"></a>    <span class="at">--type</span> <span class="st">'FeatureData[Sequence]'</span> <span class="dt">\</span></span>
+<span id="cb13-213"><a href="#cb13-213"></a>    <span class="at">--input-path</span> <span class="st">"./db/mothurPR2/pr2_version_5.0.0_SSU_mothur.fasta"</span> <span class="dt">\</span></span>
+<span id="cb13-214"><a href="#cb13-214"></a>    <span class="at">--output-path</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna.qza"</span></span>
+<span id="cb13-215"><a href="#cb13-215"></a></span>
+<span id="cb13-216"><a href="#cb13-216"></a><span class="bu">cd</span> ./db/mothurPR2</span>
+<span id="cb13-217"><a href="#cb13-217"></a><span class="fu">nano</span> pr2_version_4.14.0_SSU_mothur.tax <span class="co"># added two header values: 'Feature ID', 'Taxon'. Saved over</span></span>
+<span id="cb13-218"><a href="#cb13-218"></a><span class="bu">cd</span> ../..</span>
+<span id="cb13-219"><a href="#cb13-219"></a>   </span>
+<span id="cb13-220"><a href="#cb13-220"></a><span class="ex">qiime</span> tools import <span class="dt">\</span></span>
+<span id="cb13-221"><a href="#cb13-221"></a>    <span class="at">--type</span> <span class="st">'FeatureData[Taxonomy]'</span> <span class="dt">\</span></span>
+<span id="cb13-222"><a href="#cb13-222"></a>    <span class="at">--input-path</span> <span class="st">"./db/mothurPR2/pr2_version_5.0.0_SSU_mothur.tax"</span> <span class="dt">\</span></span>
+<span id="cb13-223"><a href="#cb13-223"></a>    <span class="at">--output-path</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax.qza"</span></span>
+<span id="cb13-224"><a href="#cb13-224"></a>    <span class="co">#--input-format HeaderlessTSVTaxonomyFormat</span></span>
+<span id="cb13-225"><a href="#cb13-225"></a><span class="in">```</span>    </span>
+<span id="cb13-226"><a href="#cb13-226"></a><span class="ss">- </span>Decompress the downloaded PR2 files, you should have FASTA and taxonomy files</span>
+<span id="cb13-227"><a href="#cb13-227"></a><span class="ss">- </span>Now, you can shift these files into QIIME2 artifacts...</span>
+<span id="cb13-228"><a href="#cb13-228"></a><span class="ss">- </span>For the taxonomy file, it has to contain column headers compatible with QIIME2. You can see how I do this, using a command-line text editor. </span>
+<span id="cb13-229"><a href="#cb13-229"></a></span>
+<span id="cb13-230"><a href="#cb13-230"></a>✨ </span>
+<span id="cb13-231"><a href="#cb13-231"></a>✨ </span>
+<span id="cb13-232"><a href="#cb13-232"></a>**YAY! Now you are aligned with the Silva tutorial...**</span>
+<span id="cb13-233"><a href="#cb13-233"></a>✨ </span>
+<span id="cb13-234"><a href="#cb13-234"></a>✨ </span>
+<span id="cb13-235"><a href="#cb13-235"></a></span>
+<span id="cb13-236"><a href="#cb13-236"></a>---</span>
+<span id="cb13-237"><a href="#cb13-237"></a></span>
+<span id="cb13-238"><a href="#cb13-238"></a></span>
+<span id="cb13-239"><a href="#cb13-239"></a><span class="fu">#### **Step 2: Remove low quality sequences**</span></span>
+<span id="cb13-240"><a href="#cb13-240"></a></span>
+<span id="cb13-241"><a href="#cb13-241"></a><span class="in">```bash</span></span>
+<span id="cb13-242"><a href="#cb13-242"></a><span class="ex">qiime</span> rescript cull-seqs <span class="dt">\</span></span>
+<span id="cb13-243"><a href="#cb13-243"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-244"><a href="#cb13-244"></a>    <span class="at">--o-clean-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_clean.qza"</span></span>
+<span id="cb13-245"><a href="#cb13-245"></a><span class="in">```</span></span>
+<span id="cb13-246"><a href="#cb13-246"></a><span class="ss">- </span>This will remove seqs with &gt;5 ambiguous bases and &gt;8 bases long homopolymer regions.</span>
+<span id="cb13-247"><a href="#cb13-247"></a><span class="ss">- </span>This cleans your db subset (ie. classifier)</span>
+<span id="cb13-248"><a href="#cb13-248"></a></span>
+<span id="cb13-249"><a href="#cb13-249"></a>.</span>
+<span id="cb13-250"><a href="#cb13-250"></a></span>
+<span id="cb13-251"><a href="#cb13-251"></a><span class="fu">#### **Step 3: Filter by expected length**</span></span>
+<span id="cb13-252"><a href="#cb13-252"></a></span>
+<span id="cb13-253"><a href="#cb13-253"></a><span class="in">```bash</span></span>
+<span id="cb13-254"><a href="#cb13-254"></a><span class="ex">qiime</span> rescript filter-seqs-length-by-taxon <span class="dt">\</span></span>
+<span id="cb13-255"><a href="#cb13-255"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_clean.qza"</span><span class="dt">\</span></span>
+<span id="cb13-256"><a href="#cb13-256"></a>    <span class="at">--i-taxonomy</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-257"><a href="#cb13-257"></a>    <span class="at">--p-labels</span> Archaea Bacteria Eukaryota <span class="dt">\</span></span>
+<span id="cb13-258"><a href="#cb13-258"></a>    <span class="at">--p-min-lens</span> 900 1200 1400 <span class="dt">\</span></span>
+<span id="cb13-259"><a href="#cb13-259"></a>    <span class="at">--o-filtered-seqs</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_filter.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-260"><a href="#cb13-260"></a>    <span class="at">--o-discarded-seqs</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_discarded.qza"</span></span>
+<span id="cb13-261"><a href="#cb13-261"></a>    <span class="co"># We will push discards into their own file</span></span>
+<span id="cb13-262"><a href="#cb13-262"></a><span class="in">```</span></span>
+<span id="cb13-263"><a href="#cb13-263"></a><span class="ss">- </span>PR2 contains archaea, bacteria, and eukaryotes, we don't want to entirely ignore archae, prok ASVs.</span>
+<span id="cb13-264"><a href="#cb13-264"></a><span class="ss">- </span>Archaea = 900bp; Bacteria = 1200bp; Eukaryotes = 1400bp.</span>
+<span id="cb13-265"><a href="#cb13-265"></a><span class="ss">- </span>Still keep discarded seqs. You can inspect what was removed if needed.</span>
+<span id="cb13-266"><a href="#cb13-266"></a></span>
+<span id="cb13-267"><a href="#cb13-267"></a>.</span>
+<span id="cb13-268"><a href="#cb13-268"></a></span>
+<span id="cb13-269"><a href="#cb13-269"></a><span class="fu">#### **Step 4: Dereplicate db seqs**</span></span>
+<span id="cb13-270"><a href="#cb13-270"></a></span>
+<span id="cb13-271"><a href="#cb13-271"></a>This command removes duplicate sequences from the reference database.</span>
+<span id="cb13-272"><a href="#cb13-272"></a></span>
+<span id="cb13-273"><a href="#cb13-273"></a><span class="in">```bash</span></span>
+<span id="cb13-274"><a href="#cb13-274"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb13-275"><a href="#cb13-275"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_filter.qza"</span>  <span class="dt">\</span></span>
+<span id="cb13-276"><a href="#cb13-276"></a>    <span class="at">--i-taxa</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax.qza"</span>  <span class="dt">\</span></span>
+<span id="cb13-277"><a href="#cb13-277"></a>    <span class="at">--p-rank-handles</span> <span class="st">'disable'</span> <span class="dt">\</span></span>
+<span id="cb13-278"><a href="#cb13-278"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb13-279"><a href="#cb13-279"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-280"><a href="#cb13-280"></a>    <span class="at">--o-dereplicated-taxa</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax_derep1.qza"</span></span>
+<span id="cb13-281"><a href="#cb13-281"></a><span class="in">```</span></span>
+<span id="cb13-282"><a href="#cb13-282"></a><span class="ss">- </span>Only a single representative seq (with taxonomy) will be retained. it's more efficient.</span>
+<span id="cb13-283"><a href="#cb13-283"></a><span class="ss">- </span>Many dbs contain repeated seqs because of multiple records. </span>
+<span id="cb13-284"><a href="#cb13-284"></a></span>
+<span id="cb13-285"><a href="#cb13-285"></a>.</span>
+<span id="cb13-286"><a href="#cb13-286"></a></span>
+<span id="cb13-287"><a href="#cb13-287"></a></span>
+<span id="cb13-288"><a href="#cb13-288"></a><span class="fu">#### **Step 5: Extract primer-specific amplicon regions**</span></span>
+<span id="cb13-289"><a href="#cb13-289"></a></span>
+<span id="cb13-290"><a href="#cb13-290"></a>This step trims the reference db to only the region targeted by the primers. After trimming, seqs are dereplicated again.</span>
+<span id="cb13-291"><a href="#cb13-291"></a></span>
+<span id="cb13-292"><a href="#cb13-292"></a><span class="in">```bash</span></span>
+<span id="cb13-293"><a href="#cb13-293"></a><span class="ex">qiime</span> feature-classifier extract-reads <span class="dt">\</span></span>
+<span id="cb13-294"><a href="#cb13-294"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_dna_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-295"><a href="#cb13-295"></a>    <span class="at">--p-f-primer</span> CAGCAGCCGCGGTAATTCC <span class="dt">\</span></span>
+<span id="cb13-296"><a href="#cb13-296"></a>    <span class="at">--p-r-primer</span> CCCGTGTTGAGTCAAATTAAGC <span class="dt">\</span></span>
+<span id="cb13-297"><a href="#cb13-297"></a>    <span class="at">--p-n-jobs</span> 16 <span class="dt">\</span></span>
+<span id="cb13-298"><a href="#cb13-298"></a>    <span class="at">--p-read-orientation</span> <span class="st">'forward'</span> <span class="dt">\</span></span>
+<span id="cb13-299"><a href="#cb13-299"></a>    <span class="at">--o-reads</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs.qza"</span></span>
+<span id="cb13-300"><a href="#cb13-300"></a></span>
+<span id="cb13-301"><a href="#cb13-301"></a><span class="ex">qiime</span> rescript dereplicate <span class="dt">\</span></span>
+<span id="cb13-302"><a href="#cb13-302"></a>    <span class="at">--i-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-303"><a href="#cb13-303"></a>    <span class="at">--i-taxa</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_tax_derep1.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-304"><a href="#cb13-304"></a>    <span class="at">--p-rank-handles</span> <span class="st">'disable'</span> <span class="dt">\</span></span>
+<span id="cb13-305"><a href="#cb13-305"></a>    <span class="at">--p-mode</span> <span class="st">'uniq'</span> <span class="dt">\</span></span>
+<span id="cb13-306"><a href="#cb13-306"></a>    <span class="at">--o-dereplicated-sequences</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-307"><a href="#cb13-307"></a>    <span class="at">--o-dereplicated-taxa</span>  <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_tax_derep.qza"</span></span>
+<span id="cb13-308"><a href="#cb13-308"></a><span class="in">```</span></span>
+<span id="cb13-309"><a href="#cb13-309"></a></span>
+<span id="cb13-310"><a href="#cb13-310"></a>.</span>
+<span id="cb13-311"><a href="#cb13-311"></a></span>
+<span id="cb13-312"><a href="#cb13-312"></a><span class="fu">#### **Step 6: Train the taxonomic classifier**</span></span>
+<span id="cb13-313"><a href="#cb13-313"></a></span>
+<span id="cb13-314"><a href="#cb13-314"></a>This step trains a Naive Bayes taxonomic classifier using the primer-trimmed reference sequences and their taxonomy annotations.</span>
+<span id="cb13-315"><a href="#cb13-315"></a></span>
+<span id="cb13-316"><a href="#cb13-316"></a><span class="in">```bash</span></span>
+<span id="cb13-317"><a href="#cb13-317"></a><span class="ex">qiime</span> feature-classifier fit-classifier-naive-bayes <span class="dt">\</span></span>
+<span id="cb13-318"><a href="#cb13-318"></a>    <span class="at">--i-reference-reads</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_seqs_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-319"><a href="#cb13-319"></a>    <span class="at">--i-reference-taxonomy</span> <span class="st">"./db/mothurPR2/pr2_v5.0.0_566F.1200R_tax_derep.qza"</span> <span class="dt">\</span></span>
+<span id="cb13-320"><a href="#cb13-320"></a>    <span class="at">--o-classifier</span> <span class="st">"./db/mothurPR2/pr2Classifier_566F.1200R.qza"</span></span>
+<span id="cb13-321"><a href="#cb13-321"></a><span class="in">```</span>    </span>
+<span id="cb13-322"><a href="#cb13-322"></a><span class="ss">- </span>The fit-classifier-naive-bayes method trains a machine learning classifier.</span>
+<span id="cb13-323"><a href="#cb13-323"></a><span class="ss">- </span>The relationship between: DNA seq patterns (k-mer frequencies) &amp; taxonomy labels.</span>
+<span id="cb13-324"><a href="#cb13-324"></a></span>
+<span id="cb13-325"><a href="#cb13-325"></a></span>
+<span id="cb13-326"><a href="#cb13-326"></a>✨ **ALL DONE! **✨   </span>
+<span id="cb13-327"><a href="#cb13-327"></a></span>
+<span id="cb13-328"><a href="#cb13-328"></a>:::</span>
+<span id="cb13-329"><a href="#cb13-329"></a></span>
+<span id="cb13-330"><a href="#cb13-330"></a></span>
+<span id="cb13-331"><a href="#cb13-331"></a></span>
+<span id="cb13-332"><a href="#cb13-332"></a></span>
+<span id="cb13-333"><a href="#cb13-333"></a></span>
+<span id="cb13-334"><a href="#cb13-334"></a></span>
+<span id="cb13-335"><a href="#cb13-335"></a></span>
+<span id="cb13-336"><a href="#cb13-336"></a></span>
+<span id="cb13-337"><a href="#cb13-337"></a></span>
+<span id="cb13-338"><a href="#cb13-338"></a></span>
+<span id="cb13-339"><a href="#cb13-339"></a></span>
+<span id="cb13-340"><a href="#cb13-340"></a></span>
+<span id="cb13-341"><a href="#cb13-341"></a></span>
+<span id="cb13-342"><a href="#cb13-342"></a></span>
+<span id="cb13-343"><a href="#cb13-343"></a></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
