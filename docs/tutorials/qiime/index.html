@@ -77,6 +77,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-7d99d32b79df9479f236071c1d12bb65.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="../../site_libs/bootstrap/bootstrap-dark-4c954aaf646480d91095ff6fbc10c9c6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -368,71 +371,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p><strong>Where can I run it?</strong> On a local machine (eg. Linux, macOS). On a remote HPC system.</p></li>
 <li><p><strong>What’s the end goal?</strong> To produce an ASV count table, representative sequence table, and taxonomy table that links to sample metadata. These outputs can be then shuttled to R for statistical and ecological analysis.</p></li>
 </ul>
-<hr>
-<p>This tutorial will walk you through 7 steps:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="PIPELINE STEPS">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-PIPELINE STEPS
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 23%">
-<col style="width: 30%">
-<col style="width: 46%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Step</th>
-<th>Purpose</th>
-<th>Main outputs</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>Import paired-end reads, assess quality using <strong>FASTQC</strong></td>
-<td><code>.qza</code> (raw sequences), <code>.qzv</code> (quality summaries)</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>Remove primers, adapters</td>
-<td><code>.qza</code> (trimmed reads), <code>.qzv</code> (post-trim quality)</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>Independent quality control (optional)</td>
-<td>FASTQC reports</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>Determine truncation lengths using <strong>Figaro</strong></td>
-<td>Truncation parameters (<code>.json</code>)</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>Denoise, merge reads using <strong>DADA2</strong></td>
-<td>ASV table, representative sequences, denoising stats</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>Assign taxonomy using <strong>SILVA</strong> classifier</td>
-<td>Taxonomy <code>.qza</code>, <code>.qzv</code></td>
-</tr>
-<tr class="odd">
-<td>7</td>
-<td>Export files for <strong>R / phyloseq</strong></td>
-<td><code>.tsv</code>, <code>.txt</code> files</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <p>.</p>
 <p>.</p>
 </section>
@@ -533,6 +471,10 @@ Follow the official installation instructions provided by the QIIME2 developers:
 <li>Output: creates a QIIME2 artifact (.qza) at specified location using the specified name.</li>
 <li>Encoding: FASTQ files use Phred+33 (standard Illumina quality encoding).</li>
 </ul>
+<blockquote class="blockquote">
+<p>🟣 <strong>What does the manifest file look like?</strong> The manifest shows QIIME2 where to locate the forward and reverse reads. Click the screenshot to see:</p>
+</blockquote>
+<p><a href="images/Manifest.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="images/Manifest.png" class="img-fluid" data-lightbox="true" width="800"></a></p>
 <hr>
 <p>Now change the qz<strong>a</strong> to qz<strong>v</strong> to visualize</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">qiime</span> demux summarize <span class="dt">\</span></span>
@@ -1225,389 +1167,412 @@ Taxonomy classification with SILVA can exceed normal memory (ie. RAM) limits. If
 <span id="cb19-7"><a href="#cb19-7"></a><span class="co">    toc-depth: 3</span></span>
 <span id="cb19-8"><a href="#cb19-8"></a><span class="co">    code-fold: true</span></span>
 <span id="cb19-9"><a href="#cb19-9"></a><span class="co">    code-tools: true</span></span>
-<span id="cb19-10"><a href="#cb19-10"></a><span class="an">execute:</span></span>
-<span id="cb19-11"><a href="#cb19-11"></a><span class="co">  echo: true</span></span>
-<span id="cb19-12"><a href="#cb19-12"></a><span class="co">  warning: false</span></span>
-<span id="cb19-13"><a href="#cb19-13"></a><span class="co">  message: false</span></span>
-<span id="cb19-14"><a href="#cb19-14"></a><span class="co">---</span></span>
-<span id="cb19-15"><a href="#cb19-15"></a></span>
-<span id="cb19-16"><a href="#cb19-16"></a><span class="fu">## Introduction</span></span>
-<span id="cb19-17"><a href="#cb19-17"></a></span>
-<span id="cb19-18"><a href="#cb19-18"></a>This pipeline uses **QIIME2** for processing **16S rRNA gene** amplicon data into amplicon sequence variants (**ASVs**). Paired-end short reads were generated using the **515F–806R** primer pair. This pipeline quality filters, trims, and denoises reads, then taxonomically classifies them using the **SILVA** reference database.</span>
-<span id="cb19-19"><a href="#cb19-19"></a></span>
-<span id="cb19-20"><a href="#cb19-20"></a><span class="ss">-   </span>**Who is this for?** </span>
-<span id="cb19-21"><a href="#cb19-21"></a>For researchers working with 16S rRNA gene amplicon datasets. They want ASV-level resolution, not OTU. They are new to QIIME and want a guided example. </span>
-<span id="cb19-22"><a href="#cb19-22"></a></span>
-<span id="cb19-23"><a href="#cb19-23"></a><span class="ss">-   </span>**Where can I run it?** </span>
-<span id="cb19-24"><a href="#cb19-24"></a>On a local machine (eg. Linux, macOS). On a remote HPC system. </span>
-<span id="cb19-25"><a href="#cb19-25"></a></span>
-<span id="cb19-26"><a href="#cb19-26"></a><span class="ss">-   </span>**What's the end goal?** </span>
-<span id="cb19-27"><a href="#cb19-27"></a>To produce an ASV count table, representative sequence table, and taxonomy table that links to sample metadata. These outputs can be then shuttled to R for statistical and ecological analysis. </span>
-<span id="cb19-28"><a href="#cb19-28"></a></span>
-<span id="cb19-29"><a href="#cb19-29"></a>---</span>
-<span id="cb19-30"><a href="#cb19-30"></a></span>
-<span id="cb19-31"><a href="#cb19-31"></a>This tutorial will walk you through 7 steps:</span>
-<span id="cb19-32"><a href="#cb19-32"></a></span>
-<span id="cb19-33"><a href="#cb19-33"></a>::: {.callout-note title="PIPELINE STEPS"}</span>
-<span id="cb19-34"><a href="#cb19-34"></a><span class="pp">|</span> Step <span class="pp">|</span> Purpose <span class="pp">|</span> Main outputs <span class="pp">|</span></span>
-<span id="cb19-35"><a href="#cb19-35"></a><span class="pp">|-------|---------|--------------|</span></span>
-<span id="cb19-36"><a href="#cb19-36"></a><span class="pp">|</span> 1 <span class="pp">|</span> Import paired-end reads, assess quality using **FASTQC** <span class="pp">|</span> <span class="in">`.qza`</span> (raw sequences), <span class="in">`.qzv`</span> (quality summaries) <span class="pp">|</span></span>
-<span id="cb19-37"><a href="#cb19-37"></a><span class="pp">|</span> 2 <span class="pp">|</span> Remove primers, adapters <span class="pp">|</span> <span class="in">`.qza`</span> (trimmed reads), <span class="in">`.qzv`</span> (post-trim quality) <span class="pp">|</span></span>
-<span id="cb19-38"><a href="#cb19-38"></a><span class="pp">|</span> 3 <span class="pp">|</span> Independent quality control (optional) <span class="pp">|</span> FASTQC reports <span class="pp">|</span></span>
-<span id="cb19-39"><a href="#cb19-39"></a><span class="pp">|</span> 4 <span class="pp">|</span> Determine truncation lengths using **Figaro** <span class="pp">|</span> Truncation parameters (<span class="in">`.json`</span>) <span class="pp">|</span></span>
-<span id="cb19-40"><a href="#cb19-40"></a><span class="pp">|</span> 5 <span class="pp">|</span> Denoise, merge reads using **DADA2** <span class="pp">|</span> ASV table, representative sequences, denoising stats <span class="pp">|</span></span>
-<span id="cb19-41"><a href="#cb19-41"></a><span class="pp">|</span> 6 <span class="pp">|</span> Assign taxonomy using **SILVA** classifier <span class="pp">|</span> Taxonomy <span class="in">`.qza`</span>, <span class="in">`.qzv`</span> <span class="pp">|</span></span>
-<span id="cb19-42"><a href="#cb19-42"></a><span class="pp">|</span> 7 <span class="pp">|</span> Export files for **R / phyloseq** <span class="pp">|</span> <span class="in">`.tsv`</span>, <span class="in">`.txt`</span> files <span class="pp">|</span></span>
-<span id="cb19-43"><a href="#cb19-43"></a>:::</span>
-<span id="cb19-44"><a href="#cb19-44"></a></span>
-<span id="cb19-45"><a href="#cb19-45"></a>.</span>
-<span id="cb19-46"><a href="#cb19-46"></a></span>
-<span id="cb19-47"><a href="#cb19-47"></a>.</span>
-<span id="cb19-48"><a href="#cb19-48"></a></span>
-<span id="cb19-49"><a href="#cb19-49"></a><span class="fu">## Required Materials</span></span>
-<span id="cb19-50"><a href="#cb19-50"></a></span>
-<span id="cb19-51"><a href="#cb19-51"></a>Here is a list of required packages: </span>
-<span id="cb19-52"><a href="#cb19-52"></a></span>
-<span id="cb19-53"><a href="#cb19-53"></a>::: {.callout-note title="REQUIRED PACKAGES"}</span>
-<span id="cb19-54"><a href="#cb19-54"></a><span class="pp">|</span> Package <span class="pp">|</span> Version <span class="pp">|</span> Notes <span class="pp">|</span></span>
-<span id="cb19-55"><a href="#cb19-55"></a><span class="pp">|---------|---------|-------|</span></span>
-<span id="cb19-56"><a href="#cb19-56"></a><span class="pp">|</span> QIIME2 <span class="pp">|</span> 2022.8 <span class="pp">|</span> Main package for processing <span class="pp">|</span></span>
-<span id="cb19-57"><a href="#cb19-57"></a><span class="pp">|</span> Python, Conda <span class="pp">|</span> ≥ 3.8 <span class="pp">|</span> Dependency for QIIME2 <span class="pp">|</span></span>
-<span id="cb19-58"><a href="#cb19-58"></a><span class="pp">|</span> Cutadapt <span class="pp">|</span> in QIIME2 <span class="pp">|</span> Primer and adapter removal <span class="pp">|</span></span>
-<span id="cb19-59"><a href="#cb19-59"></a><span class="pp">|</span> DADA2 <span class="pp">|</span> in QIIME2 <span class="pp">|</span> ASV inference and denoising <span class="pp">|</span></span>
-<span id="cb19-60"><a href="#cb19-60"></a><span class="pp">|</span> Figaro <span class="pp">|</span> latest <span class="pp">|</span> Data-driven truncation length selection <span class="pp">|</span></span>
-<span id="cb19-61"><a href="#cb19-61"></a><span class="pp">|</span> FASTQC <span class="pp">|</span> latest <span class="pp">|</span> Independent read quality assessment (optional) <span class="pp">|</span></span>
-<span id="cb19-62"><a href="#cb19-62"></a><span class="pp">|</span> SILVA <span class="pp">|</span> 138+ <span class="pp">|</span> 515F–806R trained reference classifier <span class="pp">|</span></span>
-<span id="cb19-63"><a href="#cb19-63"></a>:::</span>
-<span id="cb19-64"><a href="#cb19-64"></a></span>
-<span id="cb19-65"><a href="#cb19-65"></a>.</span>
-<span id="cb19-66"><a href="#cb19-66"></a></span>
-<span id="cb19-67"><a href="#cb19-67"></a>.</span>
-<span id="cb19-68"><a href="#cb19-68"></a></span>
-<span id="cb19-69"><a href="#cb19-69"></a><span class="fu">## Pipeline</span></span>
-<span id="cb19-70"><a href="#cb19-70"></a></span>
-<span id="cb19-71"><a href="#cb19-71"></a><span class="fu">### **Step 1**: The Bare Necessities</span></span>
-<span id="cb19-72"><a href="#cb19-72"></a></span>
-<span id="cb19-73"><a href="#cb19-73"></a><span class="ss">- </span>**Python Install**</span>
-<span id="cb19-74"><a href="#cb19-74"></a></span>
-<span id="cb19-75"><a href="#cb19-75"></a></span>
-<span id="cb19-76"><a href="#cb19-76"></a><span class="ss">- </span>**QIIME2 Install**</span>
-<span id="cb19-77"><a href="#cb19-77"></a></span>
-<span id="cb19-78"><a href="#cb19-78"></a>Install the QIIME2 community release (v2022.8) in a conda environment.  </span>
-<span id="cb19-79"><a href="#cb19-79"></a>Follow the official installation instructions provided by the QIIME2 developers:</span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="co">    lightbox: true</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="an">execute:</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a><span class="co">  echo: true</span></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="co">  warning: false</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="co">  message: false</span></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="co">---</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a></span>
+<span id="cb19-17"><a href="#cb19-17"></a><span class="fu">## Introduction</span></span>
+<span id="cb19-18"><a href="#cb19-18"></a></span>
+<span id="cb19-19"><a href="#cb19-19"></a>This pipeline uses **QIIME2** for processing **16S rRNA gene** amplicon data into amplicon sequence variants (**ASVs**). Paired-end short reads were generated using the **515F–806R** primer pair. This pipeline quality filters, trims, and denoises reads, then taxonomically classifies them using the **SILVA** reference database.</span>
+<span id="cb19-20"><a href="#cb19-20"></a></span>
+<span id="cb19-21"><a href="#cb19-21"></a><span class="ss">-   </span>**Who is this for?** </span>
+<span id="cb19-22"><a href="#cb19-22"></a>For researchers working with 16S rRNA gene amplicon datasets. They want ASV-level resolution, not OTU. They are new to QIIME and want a guided example. </span>
+<span id="cb19-23"><a href="#cb19-23"></a></span>
+<span id="cb19-24"><a href="#cb19-24"></a><span class="ss">-   </span>**Where can I run it?** </span>
+<span id="cb19-25"><a href="#cb19-25"></a>On a local machine (eg. Linux, macOS). On a remote HPC system. </span>
+<span id="cb19-26"><a href="#cb19-26"></a></span>
+<span id="cb19-27"><a href="#cb19-27"></a><span class="ss">-   </span>**What's the end goal?** </span>
+<span id="cb19-28"><a href="#cb19-28"></a>To produce an ASV count table, representative sequence table, and taxonomy table that links to sample metadata. These outputs can be then shuttled to R for statistical and ecological analysis. </span>
+<span id="cb19-29"><a href="#cb19-29"></a></span>
+<span id="cb19-30"><a href="#cb19-30"></a>.</span>
+<span id="cb19-31"><a href="#cb19-31"></a></span>
+<span id="cb19-32"><a href="#cb19-32"></a>.</span>
+<span id="cb19-33"><a href="#cb19-33"></a></span>
+<span id="cb19-34"><a href="#cb19-34"></a><span class="fu">## Required Materials</span></span>
+<span id="cb19-35"><a href="#cb19-35"></a></span>
+<span id="cb19-36"><a href="#cb19-36"></a>Here is a list of required packages: </span>
+<span id="cb19-37"><a href="#cb19-37"></a></span>
+<span id="cb19-38"><a href="#cb19-38"></a>::: {.callout-note title="REQUIRED PACKAGES"}</span>
+<span id="cb19-39"><a href="#cb19-39"></a><span class="pp">|</span> Package <span class="pp">|</span> Version <span class="pp">|</span> Notes <span class="pp">|</span></span>
+<span id="cb19-40"><a href="#cb19-40"></a><span class="pp">|---------|---------|-------|</span></span>
+<span id="cb19-41"><a href="#cb19-41"></a><span class="pp">|</span> QIIME2 <span class="pp">|</span> 2022.8 <span class="pp">|</span> Main package for processing <span class="pp">|</span></span>
+<span id="cb19-42"><a href="#cb19-42"></a><span class="pp">|</span> Python, Conda <span class="pp">|</span> ≥ 3.8 <span class="pp">|</span> Dependency for QIIME2 <span class="pp">|</span></span>
+<span id="cb19-43"><a href="#cb19-43"></a><span class="pp">|</span> Cutadapt <span class="pp">|</span> in QIIME2 <span class="pp">|</span> Primer and adapter removal <span class="pp">|</span></span>
+<span id="cb19-44"><a href="#cb19-44"></a><span class="pp">|</span> DADA2 <span class="pp">|</span> in QIIME2 <span class="pp">|</span> ASV inference and denoising <span class="pp">|</span></span>
+<span id="cb19-45"><a href="#cb19-45"></a><span class="pp">|</span> Figaro <span class="pp">|</span> latest <span class="pp">|</span> Data-driven truncation length selection <span class="pp">|</span></span>
+<span id="cb19-46"><a href="#cb19-46"></a><span class="pp">|</span> FASTQC <span class="pp">|</span> latest <span class="pp">|</span> Independent read quality assessment (optional) <span class="pp">|</span></span>
+<span id="cb19-47"><a href="#cb19-47"></a><span class="pp">|</span> SILVA <span class="pp">|</span> 138+ <span class="pp">|</span> 515F–806R trained reference classifier <span class="pp">|</span></span>
+<span id="cb19-48"><a href="#cb19-48"></a>:::</span>
+<span id="cb19-49"><a href="#cb19-49"></a></span>
+<span id="cb19-50"><a href="#cb19-50"></a>.</span>
+<span id="cb19-51"><a href="#cb19-51"></a></span>
+<span id="cb19-52"><a href="#cb19-52"></a>.</span>
+<span id="cb19-53"><a href="#cb19-53"></a></span>
+<span id="cb19-54"><a href="#cb19-54"></a><span class="fu">## Pipeline</span></span>
+<span id="cb19-55"><a href="#cb19-55"></a></span>
+<span id="cb19-56"><a href="#cb19-56"></a><span class="fu">### **Step 1**: The Bare Necessities</span></span>
+<span id="cb19-57"><a href="#cb19-57"></a></span>
+<span id="cb19-58"><a href="#cb19-58"></a><span class="ss">- </span>**Python Install**</span>
+<span id="cb19-59"><a href="#cb19-59"></a></span>
+<span id="cb19-60"><a href="#cb19-60"></a></span>
+<span id="cb19-61"><a href="#cb19-61"></a><span class="ss">- </span>**QIIME2 Install**</span>
+<span id="cb19-62"><a href="#cb19-62"></a></span>
+<span id="cb19-63"><a href="#cb19-63"></a>Install the QIIME2 community release (v2022.8) in a conda environment.  </span>
+<span id="cb19-64"><a href="#cb19-64"></a>Follow the official installation instructions provided by the QIIME2 developers:</span>
+<span id="cb19-65"><a href="#cb19-65"></a></span>
+<span id="cb19-66"><a href="#cb19-66"></a><span class="ot">&lt;https://forum.qiime2.org/t/qiime-2-2022-8-is-now-available/23994&gt;</span></span>
+<span id="cb19-67"><a href="#cb19-67"></a></span>
+<span id="cb19-68"><a href="#cb19-68"></a><span class="in">```bash</span></span>
+<span id="cb19-69"><a href="#cb19-69"></a><span class="ex">conda</span> create <span class="at">-n</span> qiime2-community-2022.8-BETA <span class="dt">\</span></span>
+<span id="cb19-70"><a href="#cb19-70"></a>  <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda <span class="dt">\</span></span>
+<span id="cb19-71"><a href="#cb19-71"></a>  <span class="at">-c</span> https://packages.qiime2.org/qiime2/2022.8/passed/community/ <span class="dt">\</span></span>
+<span id="cb19-72"><a href="#cb19-72"></a>  qiime2-community</span>
+<span id="cb19-73"><a href="#cb19-73"></a>  </span>
+<span id="cb19-74"><a href="#cb19-74"></a>  <span class="ex">conda</span> activate qiime2-2022.11</span>
+<span id="cb19-75"><a href="#cb19-75"></a><span class="in">```</span> </span>
+<span id="cb19-76"><a href="#cb19-76"></a></span>
+<span id="cb19-77"><a href="#cb19-77"></a>.</span>
+<span id="cb19-78"><a href="#cb19-78"></a></span>
+<span id="cb19-79"><a href="#cb19-79"></a><span class="fu">### **Step 2**: A Good Artifact</span></span>
 <span id="cb19-80"><a href="#cb19-80"></a></span>
-<span id="cb19-81"><a href="#cb19-81"></a><span class="ot">&lt;https://forum.qiime2.org/t/qiime-2-2022-8-is-now-available/23994&gt;</span></span>
+<span id="cb19-81"><a href="#cb19-81"></a>Import your raw paired-end FASTQ files into QIIME2 and converts them into a single artifact. This is in a structure the QIIME2 package accepts. </span>
 <span id="cb19-82"><a href="#cb19-82"></a></span>
 <span id="cb19-83"><a href="#cb19-83"></a><span class="in">```bash</span></span>
-<span id="cb19-84"><a href="#cb19-84"></a><span class="ex">conda</span> create <span class="at">-n</span> qiime2-community-2022.8-BETA <span class="dt">\</span></span>
-<span id="cb19-85"><a href="#cb19-85"></a>  <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda <span class="dt">\</span></span>
-<span id="cb19-86"><a href="#cb19-86"></a>  <span class="at">-c</span> https://packages.qiime2.org/qiime2/2022.8/passed/community/ <span class="dt">\</span></span>
-<span id="cb19-87"><a href="#cb19-87"></a>  qiime2-community</span>
-<span id="cb19-88"><a href="#cb19-88"></a>  </span>
-<span id="cb19-89"><a href="#cb19-89"></a>  <span class="ex">conda</span> activate qiime2-2022.11</span>
-<span id="cb19-90"><a href="#cb19-90"></a><span class="in">```</span> </span>
-<span id="cb19-91"><a href="#cb19-91"></a></span>
-<span id="cb19-92"><a href="#cb19-92"></a>.</span>
-<span id="cb19-93"><a href="#cb19-93"></a></span>
-<span id="cb19-94"><a href="#cb19-94"></a><span class="fu">### **Step 2**: A Good Artifact</span></span>
-<span id="cb19-95"><a href="#cb19-95"></a></span>
-<span id="cb19-96"><a href="#cb19-96"></a>Import your raw paired-end FASTQ files into QIIME2 and converts them into a single artifact. This is in a structure the QIIME2 package accepts. </span>
-<span id="cb19-97"><a href="#cb19-97"></a></span>
-<span id="cb19-98"><a href="#cb19-98"></a><span class="in">```bash</span></span>
-<span id="cb19-99"><a href="#cb19-99"></a><span class="ex">qiime</span> tools import <span class="dt">\</span></span>
-<span id="cb19-100"><a href="#cb19-100"></a>    <span class="at">--type</span> <span class="st">'SampleData[PairedEndSequencesWithQuality]'</span> <span class="dt">\</span></span>
-<span id="cb19-101"><a href="#cb19-101"></a>    <span class="at">--input-path</span> <span class="st">"manifest_g3_16s.txt"</span> <span class="dt">\</span></span>
-<span id="cb19-102"><a href="#cb19-102"></a>    <span class="at">--output-path</span> <span class="st">"./qza/g3_16s_rawSeqs.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-103"><a href="#cb19-103"></a>    <span class="at">--input-format</span> PairedEndFastqManifestPhred33V2</span>
-<span id="cb19-104"><a href="#cb19-104"></a><span class="in">```</span> </span>
-<span id="cb19-105"><a href="#cb19-105"></a><span class="ss"> - </span>SampleData<span class="co">[</span><span class="ot">PairedEndSequencesWithQuality</span><span class="co">]</span>: paired-end sequencing reads with quality scores (R1 and R2 FASTQs).</span>
-<span id="cb19-106"><a href="#cb19-106"></a><span class="ss"> - </span>Manifest file: maps sample IDs to FASTQ file paths in your project directory.</span>
-<span id="cb19-107"><a href="#cb19-107"></a><span class="ss"> - </span>Output: creates a QIIME2 artifact (.qza) at specified location using the specified name.</span>
-<span id="cb19-108"><a href="#cb19-108"></a><span class="ss"> - </span>Encoding: FASTQ files use Phred+33 (standard Illumina quality encoding).</span>
-<span id="cb19-109"><a href="#cb19-109"></a> </span>
-<span id="cb19-110"><a href="#cb19-110"></a> ---</span>
-<span id="cb19-111"><a href="#cb19-111"></a> </span>
-<span id="cb19-112"><a href="#cb19-112"></a> Now change the qz**a** to qz**v** to visualize</span>
-<span id="cb19-113"><a href="#cb19-113"></a> </span>
-<span id="cb19-114"><a href="#cb19-114"></a><span class="in">```bash</span></span>
-<span id="cb19-115"><a href="#cb19-115"></a><span class="ex">qiime</span> demux summarize <span class="dt">\</span></span>
-<span id="cb19-116"><a href="#cb19-116"></a>    <span class="at">--i-data</span> <span class="st">"./qza/g3_16s_rawSeqs.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-117"><a href="#cb19-117"></a>    <span class="at">--o-visualization</span> <span class="st">"./qzv/g3_16s_rawSeqs.qzv"</span> </span>
-<span id="cb19-118"><a href="#cb19-118"></a><span class="in">```</span> </span>
-<span id="cb19-119"><a href="#cb19-119"></a><span class="ss"> - </span>View .qzv files at <span class="ot">&lt;https://view.qiime2.org/&gt;</span></span>
-<span id="cb19-120"><a href="#cb19-120"></a><span class="ss"> - </span>Drag 'n drop </span>
-<span id="cb19-121"><a href="#cb19-121"></a></span>
-<span id="cb19-122"><a href="#cb19-122"></a>---</span>
-<span id="cb19-123"><a href="#cb19-123"></a></span>
-<span id="cb19-124"><a href="#cb19-124"></a>OPTIONAL STEP! This will run FASTQC on a small subset of raw reads as an independent quality check, outside of QIIME2.</span>
-<span id="cb19-125"><a href="#cb19-125"></a></span>
-<span id="cb19-126"><a href="#cb19-126"></a><span class="in">```bash</span></span>
-<span id="cb19-127"><a href="#cb19-127"></a><span class="fu">chmod</span> 770 ./prok/<span class="pp">*</span>gz</span>
-<span id="cb19-128"><a href="#cb19-128"></a><span class="fu">cp</span> ./prok/V4_515F_New_V5R_new-72909_GTATCGTCGT_R1.fastq.gz ./fastqc</span>
-<span id="cb19-129"><a href="#cb19-129"></a><span class="fu">cp</span> ./prok/V4_515F_New_V5R_new-72909_GTATCGTCGT_R2.fastq.gz ./fastqc</span>
-<span id="cb19-130"><a href="#cb19-130"></a><span class="fu">gzip</span> <span class="at">-d</span> ./fastqc/<span class="pp">*</span>gz</span>
-<span id="cb19-131"><a href="#cb19-131"></a><span class="ex">fastqc</span> <span class="at">-t</span> 6 ./fastqc/<span class="pp">*</span>fastq</span>
-<span id="cb19-132"><a href="#cb19-132"></a><span class="in">```</span></span>
-<span id="cb19-133"><a href="#cb19-133"></a><span class="ss"> - </span>'chmod' command ensures the FASTQ files are readable/executable.</span>
-<span id="cb19-134"><a href="#cb19-134"></a><span class="ss"> - </span>Copies one R1 and R2 FASTQ files for sample 72909 to a working directory.</span>
-<span id="cb19-135"><a href="#cb19-135"></a><span class="ss"> - </span>Decompress. FASTQC requires uncompressed FASTQ files.</span>
-<span id="cb19-136"><a href="#cb19-136"></a><span class="ss"> - </span>Generates an HTML reports, lets you known per-base quality, GC content, adapter contamination, and other diagnostics.</span>
-<span id="cb19-137"><a href="#cb19-137"></a> </span>
-<span id="cb19-138"><a href="#cb19-138"></a>.</span>
-<span id="cb19-139"><a href="#cb19-139"></a></span>
-<span id="cb19-140"><a href="#cb19-140"></a><span class="fu">### **Step 3**: Drop Dead Weight</span></span>
-<span id="cb19-141"><a href="#cb19-141"></a></span>
-<span id="cb19-142"><a href="#cb19-142"></a>This step will remove primers, adapters, and residual library sequences from the paired-end reads, then re-summarizes read quality.</span>
-<span id="cb19-143"><a href="#cb19-143"></a></span>
-<span id="cb19-144"><a href="#cb19-144"></a><span class="in">```bash</span></span>
-<span id="cb19-145"><a href="#cb19-145"></a><span class="ex">qiime</span> cutadapt trim-paired <span class="dt">\</span></span>
-<span id="cb19-146"><a href="#cb19-146"></a>  <span class="at">--i-demultiplexed-sequences</span> <span class="st">"./qza/g3_16s_rawSeqs.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-147"><a href="#cb19-147"></a>  <span class="at">--p-cores</span> 20 <span class="dt">\</span></span>
-<span id="cb19-148"><a href="#cb19-148"></a>  <span class="at">--p-front-f</span> GTGYCAGCMGCCGCGGTAA ACACTGACGACATGGTTCTACA AATGATACGGCGACCACCGAGATCT <span class="dt">\</span></span>
-<span id="cb19-149"><a href="#cb19-149"></a>  <span class="at">--p-adapter-f</span> TACGGTAGCAGAGACTTGGTCT CAAGCAGAAGACGGCATACGAGAT AGACCAAGTCTCTGC <span class="dt">\</span></span>
-<span id="cb19-150"><a href="#cb19-150"></a>  <span class="at">--p-front-r</span> GGACTACNVGGGTWTCTAAT ACACTGACGACATGGTTCTACA AATGATACGGCGACCACCGAGATCT <span class="dt">\</span></span>
-<span id="cb19-151"><a href="#cb19-151"></a>  <span class="at">--p-adapter-r</span> TACGGTAGCAGAGACTTGGTCT CAAGCAGAAGACGGCATACGAGAT TGTAGAACCATGTC <span class="dt">\</span></span>
-<span id="cb19-152"><a href="#cb19-152"></a>  <span class="at">--p-discard-untrimmed</span> <span class="dt">\</span></span>
-<span id="cb19-153"><a href="#cb19-153"></a>  <span class="at">--p-no-indels</span> <span class="dt">\</span></span>
-<span id="cb19-154"><a href="#cb19-154"></a>  <span class="at">--p-error-rate</span> 0.2 <span class="dt">\</span></span>
-<span id="cb19-155"><a href="#cb19-155"></a>  <span class="at">--o-trimmed-sequences</span> <span class="st">"./qza/g3_16s_trimmed.qza"</span></span>
-<span id="cb19-156"><a href="#cb19-156"></a><span class="in">```</span></span>
-<span id="cb19-157"><a href="#cb19-157"></a><span class="ss">- </span>You will need to specify available cores on your computer. The more the better. For speed. If you have 16 CPUS, type 14. </span>
-<span id="cb19-158"><a href="#cb19-158"></a><span class="ss">- </span>You will need to know your primer and adapter sequences. </span>
-<span id="cb19-159"><a href="#cb19-159"></a><span class="ss">- </span><span class="in">`--p-discard-untrimmed`</span> This discards reads where primers are not detected. </span>
-<span id="cb19-160"><a href="#cb19-160"></a><span class="ss">- </span><span class="in">`p-no-indels`</span> prevents insertions/deletions during matching.</span>
-<span id="cb19-161"><a href="#cb19-161"></a><span class="ss">- </span><span class="in">`--p-error-rate 0.2`</span> allows limited mismatches so degenerate primer positions are still recognized.</span>
-<span id="cb19-162"><a href="#cb19-162"></a></span>
-<span id="cb19-163"><a href="#cb19-163"></a>---</span>
-<span id="cb19-164"><a href="#cb19-164"></a></span>
-<span id="cb19-165"><a href="#cb19-165"></a>Another OPTIONAL Step! Compare this to your previous 'qiime demux summarize'</span>
-<span id="cb19-166"><a href="#cb19-166"></a></span>
-<span id="cb19-167"><a href="#cb19-167"></a><span class="in">```bash</span></span>
-<span id="cb19-168"><a href="#cb19-168"></a><span class="ex">qiime</span> demux summarize <span class="dt">\</span></span>
-<span id="cb19-169"><a href="#cb19-169"></a>    <span class="at">--i-data</span> <span class="st">"./qza/g3_16s_trimmed.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-170"><a href="#cb19-170"></a>    <span class="at">--o-visualization</span> <span class="st">"./qzv/g3_16s_trimmed.qzv"</span></span>
-<span id="cb19-171"><a href="#cb19-171"></a><span class="in">```</span></span>
-<span id="cb19-172"><a href="#cb19-172"></a> </span>
-<span id="cb19-173"><a href="#cb19-173"></a>.</span>
-<span id="cb19-174"><a href="#cb19-174"></a></span>
-<span id="cb19-175"><a href="#cb19-175"></a><span class="fu">### **Step 4**: FIGARO</span></span>
-<span id="cb19-176"><a href="#cb19-176"></a></span>
-<span id="cb19-177"><a href="#cb19-177"></a>Figaro is a package that objectively (not subjectively) selects truncation lengths for paired-end amplicon reads prior to DADA2 denoising. Emphasis on "not subjectively". Truncation lengths are chosen based on read quality and overlap metrics than visual guesswork. </span>
-<span id="cb19-178"><a href="#cb19-178"></a></span>
-<span id="cb19-179"><a href="#cb19-179"></a><span class="in">```bash</span></span>
-<span id="cb19-180"><a href="#cb19-180"></a><span class="fu">wget</span> http://john-quensen.com/wp-content/uploads/2020/03/figaro.yml</span>
-<span id="cb19-181"><a href="#cb19-181"></a><span class="ex">conda</span> env create <span class="at">-n</span> figaro <span class="at">-f</span> figaro.yml</span>
-<span id="cb19-182"><a href="#cb19-182"></a><span class="fu">wget</span> https://github.com/Zymo-Research/figaro/archive/master.zip</span>
-<span id="cb19-183"><a href="#cb19-183"></a><span class="fu">unzip</span> master.zip</span>
-<span id="cb19-184"><a href="#cb19-184"></a><span class="fu">rm</span> master.zip</span>
-<span id="cb19-185"><a href="#cb19-185"></a><span class="bu">cd</span> figaro-master/figaro</span>
-<span id="cb19-186"><a href="#cb19-186"></a><span class="fu">chmod</span> 755 <span class="pp">*</span>.py</span>
-<span id="cb19-187"><a href="#cb19-187"></a><span class="fu">wget</span> https://github.com/jfq3/Miscellaneous-scripts/raw/master/test_figaro.sh</span>
-<span id="cb19-188"><a href="#cb19-188"></a><span class="in">```</span></span>
+<span id="cb19-84"><a href="#cb19-84"></a><span class="ex">qiime</span> tools import <span class="dt">\</span></span>
+<span id="cb19-85"><a href="#cb19-85"></a>    <span class="at">--type</span> <span class="st">'SampleData[PairedEndSequencesWithQuality]'</span> <span class="dt">\</span></span>
+<span id="cb19-86"><a href="#cb19-86"></a>    <span class="at">--input-path</span> <span class="st">"manifest_g3_16s.txt"</span> <span class="dt">\</span></span>
+<span id="cb19-87"><a href="#cb19-87"></a>    <span class="at">--output-path</span> <span class="st">"./qza/g3_16s_rawSeqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-88"><a href="#cb19-88"></a>    <span class="at">--input-format</span> PairedEndFastqManifestPhred33V2</span>
+<span id="cb19-89"><a href="#cb19-89"></a><span class="in">```</span> </span>
+<span id="cb19-90"><a href="#cb19-90"></a><span class="ss"> - </span>SampleData<span class="co">[</span><span class="ot">PairedEndSequencesWithQuality</span><span class="co">]</span>: paired-end sequencing reads with quality scores (R1 and R2 FASTQs).</span>
+<span id="cb19-91"><a href="#cb19-91"></a><span class="ss"> - </span>Manifest file: maps sample IDs to FASTQ file paths in your project directory.</span>
+<span id="cb19-92"><a href="#cb19-92"></a><span class="ss"> - </span>Output: creates a QIIME2 artifact (.qza) at specified location using the specified name.</span>
+<span id="cb19-93"><a href="#cb19-93"></a><span class="ss"> - </span>Encoding: FASTQ files use Phred+33 (standard Illumina quality encoding).</span>
+<span id="cb19-94"><a href="#cb19-94"></a> </span>
+<span id="cb19-95"><a href="#cb19-95"></a> </span>
+<span id="cb19-96"><a href="#cb19-96"></a> <span class="at">&gt; 🟣 **What does the manifest file look like?** </span></span>
+<span id="cb19-97"><a href="#cb19-97"></a><span class="at"> &gt; The manifest shows QIIME2 where to locate the forward and reverse reads. Click the screenshot to see:</span></span>
+<span id="cb19-98"><a href="#cb19-98"></a></span>
+<span id="cb19-99"><a href="#cb19-99"></a><span class="al">![](images/Manifest.png)</span>{width=800px lightbox="true"}</span>
+<span id="cb19-100"><a href="#cb19-100"></a></span>
+<span id="cb19-101"><a href="#cb19-101"></a> ---</span>
+<span id="cb19-102"><a href="#cb19-102"></a> </span>
+<span id="cb19-103"><a href="#cb19-103"></a> Now change the qz**a** to qz**v** to visualize</span>
+<span id="cb19-104"><a href="#cb19-104"></a> </span>
+<span id="cb19-105"><a href="#cb19-105"></a><span class="in">```bash</span></span>
+<span id="cb19-106"><a href="#cb19-106"></a><span class="ex">qiime</span> demux summarize <span class="dt">\</span></span>
+<span id="cb19-107"><a href="#cb19-107"></a>    <span class="at">--i-data</span> <span class="st">"./qza/g3_16s_rawSeqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-108"><a href="#cb19-108"></a>    <span class="at">--o-visualization</span> <span class="st">"./qzv/g3_16s_rawSeqs.qzv"</span> </span>
+<span id="cb19-109"><a href="#cb19-109"></a><span class="in">```</span> </span>
+<span id="cb19-110"><a href="#cb19-110"></a><span class="ss"> - </span>View .qzv files at <span class="ot">&lt;https://view.qiime2.org/&gt;</span></span>
+<span id="cb19-111"><a href="#cb19-111"></a><span class="ss"> - </span>Drag 'n drop </span>
+<span id="cb19-112"><a href="#cb19-112"></a></span>
+<span id="cb19-113"><a href="#cb19-113"></a>---</span>
+<span id="cb19-114"><a href="#cb19-114"></a></span>
+<span id="cb19-115"><a href="#cb19-115"></a>OPTIONAL STEP! This will run FASTQC on a small subset of raw reads as an independent quality check, outside of QIIME2.</span>
+<span id="cb19-116"><a href="#cb19-116"></a></span>
+<span id="cb19-117"><a href="#cb19-117"></a><span class="in">```bash</span></span>
+<span id="cb19-118"><a href="#cb19-118"></a><span class="fu">chmod</span> 770 ./prok/<span class="pp">*</span>gz</span>
+<span id="cb19-119"><a href="#cb19-119"></a><span class="fu">cp</span> ./prok/V4_515F_New_V5R_new-72909_GTATCGTCGT_R1.fastq.gz ./fastqc</span>
+<span id="cb19-120"><a href="#cb19-120"></a><span class="fu">cp</span> ./prok/V4_515F_New_V5R_new-72909_GTATCGTCGT_R2.fastq.gz ./fastqc</span>
+<span id="cb19-121"><a href="#cb19-121"></a><span class="fu">gzip</span> <span class="at">-d</span> ./fastqc/<span class="pp">*</span>gz</span>
+<span id="cb19-122"><a href="#cb19-122"></a><span class="ex">fastqc</span> <span class="at">-t</span> 6 ./fastqc/<span class="pp">*</span>fastq</span>
+<span id="cb19-123"><a href="#cb19-123"></a><span class="in">```</span></span>
+<span id="cb19-124"><a href="#cb19-124"></a><span class="ss"> - </span>'chmod' command ensures the FASTQ files are readable/executable.</span>
+<span id="cb19-125"><a href="#cb19-125"></a><span class="ss"> - </span>Copies one R1 and R2 FASTQ files for sample 72909 to a working directory.</span>
+<span id="cb19-126"><a href="#cb19-126"></a><span class="ss"> - </span>Decompress. FASTQC requires uncompressed FASTQ files.</span>
+<span id="cb19-127"><a href="#cb19-127"></a><span class="ss"> - </span>Generates an HTML reports, lets you known per-base quality, GC content, adapter contamination, and other diagnostics.</span>
+<span id="cb19-128"><a href="#cb19-128"></a> </span>
+<span id="cb19-129"><a href="#cb19-129"></a>.</span>
+<span id="cb19-130"><a href="#cb19-130"></a></span>
+<span id="cb19-131"><a href="#cb19-131"></a><span class="fu">### **Step 3**: Drop Dead Weight</span></span>
+<span id="cb19-132"><a href="#cb19-132"></a></span>
+<span id="cb19-133"><a href="#cb19-133"></a>This step will remove primers, adapters, and residual library sequences from the paired-end reads, then re-summarizes read quality.</span>
+<span id="cb19-134"><a href="#cb19-134"></a></span>
+<span id="cb19-135"><a href="#cb19-135"></a><span class="in">```bash</span></span>
+<span id="cb19-136"><a href="#cb19-136"></a><span class="ex">qiime</span> cutadapt trim-paired <span class="dt">\</span></span>
+<span id="cb19-137"><a href="#cb19-137"></a>  <span class="at">--i-demultiplexed-sequences</span> <span class="st">"./qza/g3_16s_rawSeqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-138"><a href="#cb19-138"></a>  <span class="at">--p-cores</span> 20 <span class="dt">\</span></span>
+<span id="cb19-139"><a href="#cb19-139"></a>  <span class="at">--p-front-f</span> GTGYCAGCMGCCGCGGTAA ACACTGACGACATGGTTCTACA AATGATACGGCGACCACCGAGATCT <span class="dt">\</span></span>
+<span id="cb19-140"><a href="#cb19-140"></a>  <span class="at">--p-adapter-f</span> TACGGTAGCAGAGACTTGGTCT CAAGCAGAAGACGGCATACGAGAT AGACCAAGTCTCTGC <span class="dt">\</span></span>
+<span id="cb19-141"><a href="#cb19-141"></a>  <span class="at">--p-front-r</span> GGACTACNVGGGTWTCTAAT ACACTGACGACATGGTTCTACA AATGATACGGCGACCACCGAGATCT <span class="dt">\</span></span>
+<span id="cb19-142"><a href="#cb19-142"></a>  <span class="at">--p-adapter-r</span> TACGGTAGCAGAGACTTGGTCT CAAGCAGAAGACGGCATACGAGAT TGTAGAACCATGTC <span class="dt">\</span></span>
+<span id="cb19-143"><a href="#cb19-143"></a>  <span class="at">--p-discard-untrimmed</span> <span class="dt">\</span></span>
+<span id="cb19-144"><a href="#cb19-144"></a>  <span class="at">--p-no-indels</span> <span class="dt">\</span></span>
+<span id="cb19-145"><a href="#cb19-145"></a>  <span class="at">--p-error-rate</span> 0.2 <span class="dt">\</span></span>
+<span id="cb19-146"><a href="#cb19-146"></a>  <span class="at">--o-trimmed-sequences</span> <span class="st">"./qza/g3_16s_trimmed.qza"</span></span>
+<span id="cb19-147"><a href="#cb19-147"></a><span class="in">```</span></span>
+<span id="cb19-148"><a href="#cb19-148"></a><span class="ss">- </span>You will need to specify available cores on your computer. The more the better. For speed. If you have 16 CPUS, type 14. </span>
+<span id="cb19-149"><a href="#cb19-149"></a><span class="ss">- </span>You will need to know your primer and adapter sequences. </span>
+<span id="cb19-150"><a href="#cb19-150"></a><span class="ss">- </span><span class="in">`--p-discard-untrimmed`</span> This discards reads where primers are not detected. </span>
+<span id="cb19-151"><a href="#cb19-151"></a><span class="ss">- </span><span class="in">`p-no-indels`</span> prevents insertions/deletions during matching.</span>
+<span id="cb19-152"><a href="#cb19-152"></a><span class="ss">- </span><span class="in">`--p-error-rate 0.2`</span> allows limited mismatches so degenerate primer positions are still recognized.</span>
+<span id="cb19-153"><a href="#cb19-153"></a></span>
+<span id="cb19-154"><a href="#cb19-154"></a>---</span>
+<span id="cb19-155"><a href="#cb19-155"></a></span>
+<span id="cb19-156"><a href="#cb19-156"></a>Another OPTIONAL Step! Compare this to your previous 'qiime demux summarize'</span>
+<span id="cb19-157"><a href="#cb19-157"></a></span>
+<span id="cb19-158"><a href="#cb19-158"></a><span class="in">```bash</span></span>
+<span id="cb19-159"><a href="#cb19-159"></a><span class="ex">qiime</span> demux summarize <span class="dt">\</span></span>
+<span id="cb19-160"><a href="#cb19-160"></a>    <span class="at">--i-data</span> <span class="st">"./qza/g3_16s_trimmed.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-161"><a href="#cb19-161"></a>    <span class="at">--o-visualization</span> <span class="st">"./qzv/g3_16s_trimmed.qzv"</span></span>
+<span id="cb19-162"><a href="#cb19-162"></a><span class="in">```</span></span>
+<span id="cb19-163"><a href="#cb19-163"></a> </span>
+<span id="cb19-164"><a href="#cb19-164"></a>.</span>
+<span id="cb19-165"><a href="#cb19-165"></a></span>
+<span id="cb19-166"><a href="#cb19-166"></a><span class="fu">### **Step 4**: FIGARO</span></span>
+<span id="cb19-167"><a href="#cb19-167"></a></span>
+<span id="cb19-168"><a href="#cb19-168"></a>Figaro is a package that objectively (not subjectively) selects truncation lengths for paired-end amplicon reads prior to DADA2 denoising. Emphasis on "not subjectively". Truncation lengths are chosen based on read quality and overlap metrics than visual guesswork. </span>
+<span id="cb19-169"><a href="#cb19-169"></a></span>
+<span id="cb19-170"><a href="#cb19-170"></a><span class="in">```bash</span></span>
+<span id="cb19-171"><a href="#cb19-171"></a><span class="fu">wget</span> http://john-quensen.com/wp-content/uploads/2020/03/figaro.yml</span>
+<span id="cb19-172"><a href="#cb19-172"></a><span class="ex">conda</span> env create <span class="at">-n</span> figaro <span class="at">-f</span> figaro.yml</span>
+<span id="cb19-173"><a href="#cb19-173"></a><span class="fu">wget</span> https://github.com/Zymo-Research/figaro/archive/master.zip</span>
+<span id="cb19-174"><a href="#cb19-174"></a><span class="fu">unzip</span> master.zip</span>
+<span id="cb19-175"><a href="#cb19-175"></a><span class="fu">rm</span> master.zip</span>
+<span id="cb19-176"><a href="#cb19-176"></a><span class="bu">cd</span> figaro-master/figaro</span>
+<span id="cb19-177"><a href="#cb19-177"></a><span class="fu">chmod</span> 755 <span class="pp">*</span>.py</span>
+<span id="cb19-178"><a href="#cb19-178"></a><span class="fu">wget</span> https://github.com/jfq3/Miscellaneous-scripts/raw/master/test_figaro.sh</span>
+<span id="cb19-179"><a href="#cb19-179"></a><span class="in">```</span></span>
+<span id="cb19-180"><a href="#cb19-180"></a></span>
+<span id="cb19-181"><a href="#cb19-181"></a>---</span>
+<span id="cb19-182"><a href="#cb19-182"></a></span>
+<span id="cb19-183"><a href="#cb19-183"></a>Now, we will provide Figaro with one R1 and R2 FASTQ. A single sample, in this case sample 72910, is sufficient because quality profiles are typically consistent across a Illumina seq'ing run. </span>
+<span id="cb19-184"><a href="#cb19-184"></a></span>
+<span id="cb19-185"><a href="#cb19-185"></a><span class="in">```bash</span></span>
+<span id="cb19-186"><a href="#cb19-186"></a><span class="va">dir</span><span class="op">=</span><span class="st">"./figaro-master/figaro/test_figaro"</span></span>
+<span id="cb19-187"><a href="#cb19-187"></a><span class="fu">cp</span> ./prok/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R1.fastq.gz <span class="va">${dir}</span></span>
+<span id="cb19-188"><a href="#cb19-188"></a><span class="fu">cp</span> ./prok/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R2.fastq.gz <span class="va">${dir}</span></span>
 <span id="cb19-189"><a href="#cb19-189"></a></span>
-<span id="cb19-190"><a href="#cb19-190"></a>---</span>
-<span id="cb19-191"><a href="#cb19-191"></a></span>
-<span id="cb19-192"><a href="#cb19-192"></a>Now, we will provide Figaro with one R1 and R2 FASTQ. A single sample, in this case sample 72910, is sufficient because quality profiles are typically consistent across a Illumina seq'ing run. </span>
-<span id="cb19-193"><a href="#cb19-193"></a></span>
-<span id="cb19-194"><a href="#cb19-194"></a><span class="in">```bash</span></span>
-<span id="cb19-195"><a href="#cb19-195"></a><span class="va">dir</span><span class="op">=</span><span class="st">"./figaro-master/figaro/test_figaro"</span></span>
-<span id="cb19-196"><a href="#cb19-196"></a><span class="fu">cp</span> ./prok/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R1.fastq.gz <span class="va">${dir}</span></span>
-<span id="cb19-197"><a href="#cb19-197"></a><span class="fu">cp</span> ./prok/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R2.fastq.gz <span class="va">${dir}</span></span>
-<span id="cb19-198"><a href="#cb19-198"></a></span>
-<span id="cb19-199"><a href="#cb19-199"></a><span class="fu">gzip</span> <span class="at">-d</span> <span class="va">${dir}</span>/<span class="pp">*</span>.fastq.gz</span>
-<span id="cb19-200"><a href="#cb19-200"></a><span class="in">```</span></span>
-<span id="cb19-201"><a href="#cb19-201"></a></span>
-<span id="cb19-202"><a href="#cb19-202"></a>---</span>
-<span id="cb19-203"><a href="#cb19-203"></a></span>
-<span id="cb19-204"><a href="#cb19-204"></a>Rename them to easier names and run them into Figaro's Python script (.py)</span>
-<span id="cb19-205"><a href="#cb19-205"></a></span>
-<span id="cb19-206"><a href="#cb19-206"></a><span class="in">```bash</span></span>
-<span id="cb19-207"><a href="#cb19-207"></a><span class="fu">mv</span> <span class="va">${dir}</span>/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R1.fastq <span class="va">${dir}</span>/sam1_16s_R1.fastq</span>
-<span id="cb19-208"><a href="#cb19-208"></a><span class="fu">mv</span> <span class="va">${dir}</span>/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R2.fastq <span class="va">${dir}</span>/sam1_16s_R2.fastq</span>
-<span id="cb19-209"><a href="#cb19-209"></a></span>
-<span id="cb19-210"><a href="#cb19-210"></a><span class="bu">cd</span> ./figaro-master/figaro</span>
-<span id="cb19-211"><a href="#cb19-211"></a><span class="ex">python</span> figaro.py <span class="at">-i</span> ./test_figaro/ <span class="at">-o</span> ./test_figaro/ <span class="at">-f</span> 10 <span class="at">-r</span> 10 <span class="at">-a</span> 253 <span class="at">-F</span> zymo</span>
-<span id="cb19-212"><a href="#cb19-212"></a><span class="bu">cd</span> ./test_figaro</span>
-<span id="cb19-213"><a href="#cb19-213"></a><span class="fu">less</span> trimParameters.json</span>
-<span id="cb19-214"><a href="#cb19-214"></a><span class="in">```</span></span>
-<span id="cb19-215"><a href="#cb19-215"></a><span class="ss">- </span><span class="in">`-f 10 -r 10`</span> are minimum overlap requirements (forward/reverse).</span>
-<span id="cb19-216"><a href="#cb19-216"></a><span class="ss">- </span><span class="in">`-a 253`</span> this is expected amplicon length (after primer removal).</span>
-<span id="cb19-217"><a href="#cb19-217"></a><span class="ss">- </span><span class="in">`-F zymo`</span> is the scoring model appropriate for Illumina data.</span>
-<span id="cb19-218"><a href="#cb19-218"></a><span class="ss">- </span><span class="in">`less`</span> will open up the .json file.</span>
+<span id="cb19-190"><a href="#cb19-190"></a><span class="fu">gzip</span> <span class="at">-d</span> <span class="va">${dir}</span>/<span class="pp">*</span>.fastq.gz</span>
+<span id="cb19-191"><a href="#cb19-191"></a><span class="in">```</span></span>
+<span id="cb19-192"><a href="#cb19-192"></a></span>
+<span id="cb19-193"><a href="#cb19-193"></a>---</span>
+<span id="cb19-194"><a href="#cb19-194"></a></span>
+<span id="cb19-195"><a href="#cb19-195"></a>Rename them to easier names and run them into Figaro's Python script (.py)</span>
+<span id="cb19-196"><a href="#cb19-196"></a></span>
+<span id="cb19-197"><a href="#cb19-197"></a><span class="in">```bash</span></span>
+<span id="cb19-198"><a href="#cb19-198"></a><span class="fu">mv</span> <span class="va">${dir}</span>/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R1.fastq <span class="va">${dir}</span>/sam1_16s_R1.fastq</span>
+<span id="cb19-199"><a href="#cb19-199"></a><span class="fu">mv</span> <span class="va">${dir}</span>/V4_515F_New_V4_806R_New-72910_GTGTATGCGT_R2.fastq <span class="va">${dir}</span>/sam1_16s_R2.fastq</span>
+<span id="cb19-200"><a href="#cb19-200"></a></span>
+<span id="cb19-201"><a href="#cb19-201"></a><span class="bu">cd</span> ./figaro-master/figaro</span>
+<span id="cb19-202"><a href="#cb19-202"></a><span class="ex">python</span> figaro.py <span class="at">-i</span> ./test_figaro/ <span class="at">-o</span> ./test_figaro/ <span class="at">-f</span> 10 <span class="at">-r</span> 10 <span class="at">-a</span> 253 <span class="at">-F</span> zymo</span>
+<span id="cb19-203"><a href="#cb19-203"></a><span class="bu">cd</span> ./test_figaro</span>
+<span id="cb19-204"><a href="#cb19-204"></a><span class="fu">less</span> trimParameters.json</span>
+<span id="cb19-205"><a href="#cb19-205"></a><span class="in">```</span></span>
+<span id="cb19-206"><a href="#cb19-206"></a><span class="ss">- </span><span class="in">`-f 10 -r 10`</span> are minimum overlap requirements (forward/reverse).</span>
+<span id="cb19-207"><a href="#cb19-207"></a><span class="ss">- </span><span class="in">`-a 253`</span> this is expected amplicon length (after primer removal).</span>
+<span id="cb19-208"><a href="#cb19-208"></a><span class="ss">- </span><span class="in">`-F zymo`</span> is the scoring model appropriate for Illumina data.</span>
+<span id="cb19-209"><a href="#cb19-209"></a><span class="ss">- </span><span class="in">`less`</span> will open up the .json file.</span>
+<span id="cb19-210"><a href="#cb19-210"></a></span>
+<span id="cb19-211"><a href="#cb19-211"></a>---</span>
+<span id="cb19-212"><a href="#cb19-212"></a></span>
+<span id="cb19-213"><a href="#cb19-213"></a>The top entry you see shows the recommended forward and reverse truncation length. Choose the highest percent score where expected errors are not ≥ 3. I expect the F and R will overlap by 12 nt. </span>
+<span id="cb19-214"><a href="#cb19-214"></a></span>
+<span id="cb19-215"><a href="#cb19-215"></a><span class="in">```bash</span></span>
+<span id="cb19-216"><a href="#cb19-216"></a><span class="ex">q</span>           <span class="co"># To exit out of the .json</span></span>
+<span id="cb19-217"><a href="#cb19-217"></a><span class="bu">cd</span> ../../.. <span class="co"># Go back to the starting position in your working directory</span></span>
+<span id="cb19-218"><a href="#cb19-218"></a><span class="in">```</span></span>
 <span id="cb19-219"><a href="#cb19-219"></a></span>
-<span id="cb19-220"><a href="#cb19-220"></a>---</span>
+<span id="cb19-220"><a href="#cb19-220"></a>.</span>
 <span id="cb19-221"><a href="#cb19-221"></a></span>
-<span id="cb19-222"><a href="#cb19-222"></a>The top entry you see shows the recommended forward and reverse truncation length. Choose the highest percent score where expected errors are not ≥ 3. I expect the F and R will overlap by 12 nt. </span>
+<span id="cb19-222"><a href="#cb19-222"></a><span class="fu">### **Step 5**: DADA2 </span></span>
 <span id="cb19-223"><a href="#cb19-223"></a></span>
-<span id="cb19-224"><a href="#cb19-224"></a><span class="in">```bash</span></span>
-<span id="cb19-225"><a href="#cb19-225"></a><span class="ex">q</span>           <span class="co"># To exit out of the .json</span></span>
-<span id="cb19-226"><a href="#cb19-226"></a><span class="bu">cd</span> ../../.. <span class="co"># Go back to the starting position in your working directory</span></span>
-<span id="cb19-227"><a href="#cb19-227"></a><span class="in">```</span></span>
-<span id="cb19-228"><a href="#cb19-228"></a></span>
-<span id="cb19-229"><a href="#cb19-229"></a>.</span>
-<span id="cb19-230"><a href="#cb19-230"></a></span>
-<span id="cb19-231"><a href="#cb19-231"></a><span class="fu">### **Step 5**: DADA2 </span></span>
-<span id="cb19-232"><a href="#cb19-232"></a></span>
-<span id="cb19-233"><a href="#cb19-233"></a>Now, it is time to denoise, merge, and infer ASVs from the primer-trimmed paired-end reads.</span>
-<span id="cb19-234"><a href="#cb19-234"></a></span>
-<span id="cb19-235"><a href="#cb19-235"></a><span class="in">```bash</span></span>
-<span id="cb19-236"><a href="#cb19-236"></a><span class="ex">qiime</span> dada2 denoise-paired <span class="dt">\</span></span>
-<span id="cb19-237"><a href="#cb19-237"></a>  <span class="at">--i-demultiplexed-seqs</span> <span class="st">"./qza/g3_16s_trimmed.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-238"><a href="#cb19-238"></a>  <span class="at">--p-trunc-len-f</span> 244 <span class="at">--p-max-ee-f</span> 2 <span class="dt">\</span></span>
-<span id="cb19-239"><a href="#cb19-239"></a>  <span class="at">--p-trunc-len-r</span> 49  <span class="at">--p-max-ee-r</span> 2 <span class="dt">\</span></span>
-<span id="cb19-240"><a href="#cb19-240"></a>  <span class="at">--p-n-threads</span> 20 <span class="dt">\</span></span>
-<span id="cb19-241"><a href="#cb19-241"></a>  <span class="at">--o-representative-sequences</span> <span class="st">"./qza/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-242"><a href="#cb19-242"></a>  <span class="at">--o-table</span> <span class="st">"./qza/g3_16s_reprSeqs_countTable.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-243"><a href="#cb19-243"></a>  <span class="at">--o-denoising-stats</span> <span class="st">"./qza/g3_16s_denoiseStats.qza"</span></span>
-<span id="cb19-244"><a href="#cb19-244"></a><span class="in">```</span></span>
+<span id="cb19-224"><a href="#cb19-224"></a>Now, it is time to denoise, merge, and infer ASVs from the primer-trimmed paired-end reads.</span>
+<span id="cb19-225"><a href="#cb19-225"></a></span>
+<span id="cb19-226"><a href="#cb19-226"></a><span class="in">```bash</span></span>
+<span id="cb19-227"><a href="#cb19-227"></a><span class="ex">qiime</span> dada2 denoise-paired <span class="dt">\</span></span>
+<span id="cb19-228"><a href="#cb19-228"></a>  <span class="at">--i-demultiplexed-seqs</span> <span class="st">"./qza/g3_16s_trimmed.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-229"><a href="#cb19-229"></a>  <span class="at">--p-trunc-len-f</span> 244 <span class="at">--p-max-ee-f</span> 2 <span class="dt">\</span></span>
+<span id="cb19-230"><a href="#cb19-230"></a>  <span class="at">--p-trunc-len-r</span> 49  <span class="at">--p-max-ee-r</span> 2 <span class="dt">\</span></span>
+<span id="cb19-231"><a href="#cb19-231"></a>  <span class="at">--p-n-threads</span> 20 <span class="dt">\</span></span>
+<span id="cb19-232"><a href="#cb19-232"></a>  <span class="at">--o-representative-sequences</span> <span class="st">"./qza/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-233"><a href="#cb19-233"></a>  <span class="at">--o-table</span> <span class="st">"./qza/g3_16s_reprSeqs_countTable.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-234"><a href="#cb19-234"></a>  <span class="at">--o-denoising-stats</span> <span class="st">"./qza/g3_16s_denoiseStats.qza"</span></span>
+<span id="cb19-235"><a href="#cb19-235"></a><span class="in">```</span></span>
+<span id="cb19-236"><a href="#cb19-236"></a></span>
+<span id="cb19-237"><a href="#cb19-237"></a><span class="ss">- </span><span class="in">`--p-trunc-len-f`</span>, <span class="in">`--p-trunc-len-r`</span>: Truncates reads at the Figaro-selected positions. </span>
+<span id="cb19-238"><a href="#cb19-238"></a><span class="ss">- </span><span class="in">`--p-max-ee-f/r 2`</span>: Reads with &gt;2 expected errors are discarded.</span>
+<span id="cb19-239"><a href="#cb19-239"></a></span>
+<span id="cb19-240"><a href="#cb19-240"></a>Congrats! We have a table of **representative sequences** and the **count table** ✨🥳.</span>
+<span id="cb19-241"><a href="#cb19-241"></a></span>
+<span id="cb19-242"><a href="#cb19-242"></a>.</span>
+<span id="cb19-243"><a href="#cb19-243"></a></span>
+<span id="cb19-244"><a href="#cb19-244"></a><span class="fu">### **Step 6**: Taxonomy</span></span>
 <span id="cb19-245"><a href="#cb19-245"></a></span>
-<span id="cb19-246"><a href="#cb19-246"></a><span class="ss">- </span><span class="in">`--p-trunc-len-f`</span>, <span class="in">`--p-trunc-len-r`</span>: Truncates reads at the Figaro-selected positions. </span>
-<span id="cb19-247"><a href="#cb19-247"></a><span class="ss">- </span><span class="in">`--p-max-ee-f/r 2`</span>: Reads with &gt;2 expected errors are discarded.</span>
-<span id="cb19-248"><a href="#cb19-248"></a></span>
-<span id="cb19-249"><a href="#cb19-249"></a>Congrats! We have a table of **representative sequences** and the **count table** ✨🥳.</span>
-<span id="cb19-250"><a href="#cb19-250"></a></span>
-<span id="cb19-251"><a href="#cb19-251"></a>.</span>
-<span id="cb19-252"><a href="#cb19-252"></a></span>
-<span id="cb19-253"><a href="#cb19-253"></a><span class="fu">### **Step 6**: Taxonomy</span></span>
-<span id="cb19-254"><a href="#cb19-254"></a></span>
-<span id="cb19-255"><a href="#cb19-255"></a>For this step, you may run taxonomy classification either on an HPC system or on your local machine. Classification with the SILVA database can exceed typical RAM limits, which is why an HPC environment is generally preferred. But the step can be run locally if sufficient memory is available. The alignment will run slower and your computer will be working hard. </span>
-<span id="cb19-256"><a href="#cb19-256"></a></span>
-<span id="cb19-257"><a href="#cb19-257"></a><span class="at">&gt; Stop here! **You will need to pre-trained Classifier in QIIME2 before moving forward.** Refer to this tutorial to pre-train a classifier... </span><span class="co">[</span><span class="ot">QIIME2 Classifer</span><span class="co">](./side.qmd)</span><span class="at">{.btn .btn-primary .me-2}</span></span>
-<span id="cb19-258"><a href="#cb19-258"></a></span>
-<span id="cb19-259"><a href="#cb19-259"></a>::: {.panel-tabset}</span>
-<span id="cb19-260"><a href="#cb19-260"></a></span>
-<span id="cb19-261"><a href="#cb19-261"></a><span class="fu">### HPC System</span></span>
-<span id="cb19-262"><a href="#cb19-262"></a></span>
-<span id="cb19-263"><a href="#cb19-263"></a>On an HPC system, like HiperGator, make a SLURM script. This script submits a taxonomy classification job to an HPC system, assigning taxonomy to ASVs using a pre-trained SILVA classifier in QIIME 2.</span>
-<span id="cb19-264"><a href="#cb19-264"></a></span>
-<span id="cb19-265"><a href="#cb19-265"></a>First, place your required inputs in the appropriate working directory. Only two files are needed:</span>
-<span id="cb19-266"><a href="#cb19-266"></a><span class="ss">- </span><span class="in">`silvaClassifier.qza`</span>   </span>
-<span id="cb19-267"><a href="#cb19-267"></a><span class="ss">- </span><span class="in">`reprSeqs.qza`</span></span>
-<span id="cb19-268"><a href="#cb19-268"></a></span>
-<span id="cb19-269"><a href="#cb19-269"></a>Second, log into your HPC system and navigate to your working folder. Once resources are available, open a new script file by typing:</span>
-<span id="cb19-270"><a href="#cb19-270"></a></span>
-<span id="cb19-271"><a href="#cb19-271"></a><span class="in">```bash</span></span>
-<span id="cb19-272"><a href="#cb19-272"></a><span class="fu">nano</span></span>
-<span id="cb19-273"><a href="#cb19-273"></a><span class="in">```</span></span>
-<span id="cb19-274"><a href="#cb19-274"></a></span>
-<span id="cb19-275"><a href="#cb19-275"></a>Third, paste: </span>
-<span id="cb19-276"><a href="#cb19-276"></a></span>
-<span id="cb19-277"><a href="#cb19-277"></a><span class="in">```bash</span></span>
-<span id="cb19-278"><a href="#cb19-278"></a></span>
-<span id="cb19-279"><a href="#cb19-279"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb19-280"><a href="#cb19-280"></a><span class="co">#SBATCH --job-name=outFiles/taxclass.%j</span></span>
-<span id="cb19-281"><a href="#cb19-281"></a><span class="co">#SBATCH --ntasks=1</span></span>
-<span id="cb19-282"><a href="#cb19-282"></a><span class="co">#SBATCH --cpus-per-task=8</span></span>
-<span id="cb19-283"><a href="#cb19-283"></a><span class="co">#SBATCH --nodes=1</span></span>
-<span id="cb19-284"><a href="#cb19-284"></a><span class="co">#SBATCH --mem=400GB</span></span>
-<span id="cb19-285"><a href="#cb19-285"></a><span class="co">#SBATCH --account=b.durham</span></span>
-<span id="cb19-286"><a href="#cb19-286"></a><span class="co">#SBATCH --qos=b.durham-b</span></span>
-<span id="cb19-287"><a href="#cb19-287"></a><span class="co">#SBATCH -t 95:00:00</span></span>
-<span id="cb19-288"><a href="#cb19-288"></a><span class="co">#SBATCH --partition=hpg-milan</span></span>
-<span id="cb19-289"><a href="#cb19-289"></a><span class="co">#SBATCH --output=outFiles/taxclass.%A.out</span></span>
-<span id="cb19-290"><a href="#cb19-290"></a><span class="co">#SBATCH --array=1-1</span></span>
-<span id="cb19-291"><a href="#cb19-291"></a></span>
-<span id="cb19-292"><a href="#cb19-292"></a><span class="fu">date</span><span class="kw">;</span><span class="fu">hostname</span><span class="kw">;</span><span class="bu">pwd</span></span>
-<span id="cb19-293"><a href="#cb19-293"></a> </span>
-<span id="cb19-294"><a href="#cb19-294"></a><span class="ex">module</span> load qiime2/2022.8</span>
-<span id="cb19-295"><a href="#cb19-295"></a></span>
-<span id="cb19-296"><a href="#cb19-296"></a><span class="va">dir</span><span class="op">=</span><span class="st">"g3/qza/"</span> <span class="co"># Change to fit your pathway structure</span></span>
-<span id="cb19-297"><a href="#cb19-297"></a></span>
-<span id="cb19-298"><a href="#cb19-298"></a><span class="ex">qiime</span> feature-classifier classify-sklearn <span class="dt">\</span></span>
-<span id="cb19-299"><a href="#cb19-299"></a>  <span class="at">--p-n-jobs</span> 8 <span class="dt">\</span></span>
-<span id="cb19-300"><a href="#cb19-300"></a>  <span class="at">--i-classifier</span> <span class="st">"./</span><span class="va">${dir}</span><span class="st">/silvaClassifier_nr99_515F.806R.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-301"><a href="#cb19-301"></a>  <span class="at">--i-reads</span> <span class="st">"./</span><span class="va">${dir}</span><span class="st">/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-302"><a href="#cb19-302"></a>  <span class="at">--o-classification</span> <span class="st">"./</span><span class="va">${dir}</span><span class="st">/g3_16s_reprSeqs_taxAligned.qza"</span></span>
-<span id="cb19-303"><a href="#cb19-303"></a>  </span>
-<span id="cb19-304"><a href="#cb19-304"></a><span class="in">```</span></span>
-<span id="cb19-305"><a href="#cb19-305"></a></span>
-<span id="cb19-306"><a href="#cb19-306"></a>Finally, save the file and exit the editor, then submit the job with:</span>
+<span id="cb19-246"><a href="#cb19-246"></a>For this step, you may run taxonomy classification either on an HPC system or on your local machine. Classification with the SILVA database can exceed typical RAM limits, which is why an HPC environment is generally preferred. But the step can be run locally if sufficient memory is available. The alignment will run slower and your computer will be working hard. </span>
+<span id="cb19-247"><a href="#cb19-247"></a></span>
+<span id="cb19-248"><a href="#cb19-248"></a><span class="at">&gt; Stop here! **You will need to pre-trained Classifier in QIIME2 before moving forward.** Refer to this tutorial to pre-train a classifier... </span><span class="co">[</span><span class="ot">QIIME2 Classifer</span><span class="co">](./side.qmd)</span><span class="at">{.btn .btn-primary .me-2}</span></span>
+<span id="cb19-249"><a href="#cb19-249"></a></span>
+<span id="cb19-250"><a href="#cb19-250"></a>::: {.panel-tabset}</span>
+<span id="cb19-251"><a href="#cb19-251"></a></span>
+<span id="cb19-252"><a href="#cb19-252"></a><span class="fu">### HPC System</span></span>
+<span id="cb19-253"><a href="#cb19-253"></a></span>
+<span id="cb19-254"><a href="#cb19-254"></a>On an HPC system, like HiperGator, make a SLURM script. This script submits a taxonomy classification job to an HPC system, assigning taxonomy to ASVs using a pre-trained SILVA classifier in QIIME 2.</span>
+<span id="cb19-255"><a href="#cb19-255"></a></span>
+<span id="cb19-256"><a href="#cb19-256"></a>First, place your required inputs in the appropriate working directory. Only two files are needed:</span>
+<span id="cb19-257"><a href="#cb19-257"></a><span class="ss">- </span><span class="in">`silvaClassifier.qza`</span>   </span>
+<span id="cb19-258"><a href="#cb19-258"></a><span class="ss">- </span><span class="in">`reprSeqs.qza`</span></span>
+<span id="cb19-259"><a href="#cb19-259"></a></span>
+<span id="cb19-260"><a href="#cb19-260"></a>Second, log into your HPC system and navigate to your working folder. Once resources are available, open a new script file by typing:</span>
+<span id="cb19-261"><a href="#cb19-261"></a></span>
+<span id="cb19-262"><a href="#cb19-262"></a><span class="in">```bash</span></span>
+<span id="cb19-263"><a href="#cb19-263"></a><span class="fu">nano</span></span>
+<span id="cb19-264"><a href="#cb19-264"></a><span class="in">```</span></span>
+<span id="cb19-265"><a href="#cb19-265"></a></span>
+<span id="cb19-266"><a href="#cb19-266"></a>Third, paste: </span>
+<span id="cb19-267"><a href="#cb19-267"></a></span>
+<span id="cb19-268"><a href="#cb19-268"></a><span class="in">```bash</span></span>
+<span id="cb19-269"><a href="#cb19-269"></a></span>
+<span id="cb19-270"><a href="#cb19-270"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb19-271"><a href="#cb19-271"></a><span class="co">#SBATCH --job-name=outFiles/taxclass.%j</span></span>
+<span id="cb19-272"><a href="#cb19-272"></a><span class="co">#SBATCH --ntasks=1</span></span>
+<span id="cb19-273"><a href="#cb19-273"></a><span class="co">#SBATCH --cpus-per-task=8</span></span>
+<span id="cb19-274"><a href="#cb19-274"></a><span class="co">#SBATCH --nodes=1</span></span>
+<span id="cb19-275"><a href="#cb19-275"></a><span class="co">#SBATCH --mem=400GB</span></span>
+<span id="cb19-276"><a href="#cb19-276"></a><span class="co">#SBATCH --account=b.durham</span></span>
+<span id="cb19-277"><a href="#cb19-277"></a><span class="co">#SBATCH --qos=b.durham-b</span></span>
+<span id="cb19-278"><a href="#cb19-278"></a><span class="co">#SBATCH -t 95:00:00</span></span>
+<span id="cb19-279"><a href="#cb19-279"></a><span class="co">#SBATCH --partition=hpg-milan</span></span>
+<span id="cb19-280"><a href="#cb19-280"></a><span class="co">#SBATCH --output=outFiles/taxclass.%A.out</span></span>
+<span id="cb19-281"><a href="#cb19-281"></a><span class="co">#SBATCH --array=1-1</span></span>
+<span id="cb19-282"><a href="#cb19-282"></a></span>
+<span id="cb19-283"><a href="#cb19-283"></a><span class="fu">date</span><span class="kw">;</span><span class="fu">hostname</span><span class="kw">;</span><span class="bu">pwd</span></span>
+<span id="cb19-284"><a href="#cb19-284"></a> </span>
+<span id="cb19-285"><a href="#cb19-285"></a><span class="ex">module</span> load qiime2/2022.8</span>
+<span id="cb19-286"><a href="#cb19-286"></a></span>
+<span id="cb19-287"><a href="#cb19-287"></a><span class="va">dir</span><span class="op">=</span><span class="st">"g3/qza/"</span> <span class="co"># Change to fit your pathway structure</span></span>
+<span id="cb19-288"><a href="#cb19-288"></a></span>
+<span id="cb19-289"><a href="#cb19-289"></a><span class="ex">qiime</span> feature-classifier classify-sklearn <span class="dt">\</span></span>
+<span id="cb19-290"><a href="#cb19-290"></a>  <span class="at">--p-n-jobs</span> 8 <span class="dt">\</span></span>
+<span id="cb19-291"><a href="#cb19-291"></a>  <span class="at">--i-classifier</span> <span class="st">"./</span><span class="va">${dir}</span><span class="st">/silvaClassifier_nr99_515F.806R.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-292"><a href="#cb19-292"></a>  <span class="at">--i-reads</span> <span class="st">"./</span><span class="va">${dir}</span><span class="st">/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-293"><a href="#cb19-293"></a>  <span class="at">--o-classification</span> <span class="st">"./</span><span class="va">${dir}</span><span class="st">/g3_16s_reprSeqs_taxAligned.qza"</span></span>
+<span id="cb19-294"><a href="#cb19-294"></a>  </span>
+<span id="cb19-295"><a href="#cb19-295"></a><span class="in">```</span></span>
+<span id="cb19-296"><a href="#cb19-296"></a></span>
+<span id="cb19-297"><a href="#cb19-297"></a>Finally, save the file and exit the editor, then submit the job with:</span>
+<span id="cb19-298"><a href="#cb19-298"></a></span>
+<span id="cb19-299"><a href="#cb19-299"></a><span class="in">```bash</span></span>
+<span id="cb19-300"><a href="#cb19-300"></a><span class="ex">sbatch</span> taxclass.sh</span>
+<span id="cb19-301"><a href="#cb19-301"></a><span class="in">```</span> </span>
+<span id="cb19-302"><a href="#cb19-302"></a></span>
+<span id="cb19-303"><a href="#cb19-303"></a><span class="fu">### Local System</span></span>
+<span id="cb19-304"><a href="#cb19-304"></a></span>
+<span id="cb19-305"><a href="#cb19-305"></a><span class="at">&gt; Note!</span>  </span>
+<span id="cb19-306"><a href="#cb19-306"></a><span class="at">&gt; Taxonomy classification with SILVA can exceed normal memory (ie. RAM) limits. If this command fails locally, reduce </span><span class="in">`--p-n-jobs`</span><span class="at"> or run on an HPC system</span></span>
 <span id="cb19-307"><a href="#cb19-307"></a></span>
 <span id="cb19-308"><a href="#cb19-308"></a><span class="in">```bash</span></span>
-<span id="cb19-309"><a href="#cb19-309"></a><span class="ex">sbatch</span> taxclass.sh</span>
-<span id="cb19-310"><a href="#cb19-310"></a><span class="in">```</span> </span>
-<span id="cb19-311"><a href="#cb19-311"></a></span>
-<span id="cb19-312"><a href="#cb19-312"></a><span class="fu">### Local System</span></span>
-<span id="cb19-313"><a href="#cb19-313"></a></span>
-<span id="cb19-314"><a href="#cb19-314"></a><span class="at">&gt; Note!</span>  </span>
-<span id="cb19-315"><a href="#cb19-315"></a><span class="at">&gt; Taxonomy classification with SILVA can exceed normal memory (ie. RAM) limits. If this command fails locally, reduce </span><span class="in">`--p-n-jobs`</span><span class="at"> or run on an HPC system</span></span>
+<span id="cb19-309"><a href="#cb19-309"></a><span class="ex">qiime</span> feature-classifier classify-sklearn <span class="dt">\</span></span>
+<span id="cb19-310"><a href="#cb19-310"></a>  <span class="at">--p-n-jobs</span> 4 <span class="dt">\</span></span>
+<span id="cb19-311"><a href="#cb19-311"></a>  <span class="at">--i-classifier</span> <span class="st">"./qza/silvaClassifier_nr99_515F.806R.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-312"><a href="#cb19-312"></a>  <span class="at">--i-reads</span> <span class="st">"./qza/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-313"><a href="#cb19-313"></a>  <span class="at">--o-classification</span> <span class="st">"./qza/g3_16s_reprSeqs_taxAligned.qza"</span></span>
+<span id="cb19-314"><a href="#cb19-314"></a></span>
+<span id="cb19-315"><a href="#cb19-315"></a><span class="in">```</span></span>
 <span id="cb19-316"><a href="#cb19-316"></a></span>
-<span id="cb19-317"><a href="#cb19-317"></a><span class="in">```bash</span></span>
-<span id="cb19-318"><a href="#cb19-318"></a><span class="ex">qiime</span> feature-classifier classify-sklearn <span class="dt">\</span></span>
-<span id="cb19-319"><a href="#cb19-319"></a>  <span class="at">--p-n-jobs</span> 4 <span class="dt">\</span></span>
-<span id="cb19-320"><a href="#cb19-320"></a>  <span class="at">--i-classifier</span> <span class="st">"./qza/silvaClassifier_nr99_515F.806R.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-321"><a href="#cb19-321"></a>  <span class="at">--i-reads</span> <span class="st">"./qza/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-322"><a href="#cb19-322"></a>  <span class="at">--o-classification</span> <span class="st">"./qza/g3_16s_reprSeqs_taxAligned.qza"</span></span>
-<span id="cb19-323"><a href="#cb19-323"></a></span>
-<span id="cb19-324"><a href="#cb19-324"></a><span class="in">```</span></span>
-<span id="cb19-325"><a href="#cb19-325"></a></span>
+<span id="cb19-317"><a href="#cb19-317"></a></span>
+<span id="cb19-318"><a href="#cb19-318"></a></span>
+<span id="cb19-319"><a href="#cb19-319"></a>:::</span>
+<span id="cb19-320"><a href="#cb19-320"></a></span>
+<span id="cb19-321"><a href="#cb19-321"></a>.</span>
+<span id="cb19-322"><a href="#cb19-322"></a></span>
+<span id="cb19-323"><a href="#cb19-323"></a><span class="fu">### **Step 7**: Export Files</span></span>
+<span id="cb19-324"><a href="#cb19-324"></a></span>
+<span id="cb19-325"><a href="#cb19-325"></a>Almost done! Now, we have to export .qza files, convert to BIOM format, then to tab-deliminated table (.tsv). These file types can be opened, viewed, and pushed into R-studio on a local computer.</span>
 <span id="cb19-326"><a href="#cb19-326"></a></span>
-<span id="cb19-327"><a href="#cb19-327"></a></span>
-<span id="cb19-328"><a href="#cb19-328"></a>:::</span>
-<span id="cb19-329"><a href="#cb19-329"></a></span>
-<span id="cb19-330"><a href="#cb19-330"></a>.</span>
-<span id="cb19-331"><a href="#cb19-331"></a></span>
-<span id="cb19-332"><a href="#cb19-332"></a><span class="fu">### **Step 7**: Export Files</span></span>
-<span id="cb19-333"><a href="#cb19-333"></a></span>
-<span id="cb19-334"><a href="#cb19-334"></a>Almost done! Now, we have to export .qza files, convert to BIOM format, then to tab-deliminated table (.tsv). These file types can be opened, viewed, and pushed into R-studio on a local computer.</span>
-<span id="cb19-335"><a href="#cb19-335"></a></span>
-<span id="cb19-336"><a href="#cb19-336"></a>---</span>
-<span id="cb19-337"><a href="#cb19-337"></a></span>
-<span id="cb19-338"><a href="#cb19-338"></a>1️⃣ **Count Table** = ASV-by-sample count matrix</span>
-<span id="cb19-339"><a href="#cb19-339"></a></span>
-<span id="cb19-340"><a href="#cb19-340"></a><span class="in">```bash</span></span>
-<span id="cb19-341"><a href="#cb19-341"></a></span>
-<span id="cb19-342"><a href="#cb19-342"></a><span class="co"># qza to BIOM</span></span>
-<span id="cb19-343"><a href="#cb19-343"></a><span class="ex">qiime</span> tools export <span class="dt">\</span></span>
-<span id="cb19-344"><a href="#cb19-344"></a>  <span class="at">--input-path</span> <span class="st">"./qza/g3_16s_reprSeqs_countTable.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-345"><a href="#cb19-345"></a>  <span class="at">--output-path</span> <span class="st">"./phyloseq"</span></span>
-<span id="cb19-346"><a href="#cb19-346"></a>  </span>
-<span id="cb19-347"><a href="#cb19-347"></a><span class="co"># BIOM to tsv</span></span>
-<span id="cb19-348"><a href="#cb19-348"></a><span class="ex">biom</span> convert <span class="dt">\</span></span>
-<span id="cb19-349"><a href="#cb19-349"></a>  <span class="at">-i</span> <span class="st">"./phyloseq/feature-table.biom"</span> <span class="dt">\</span></span>
-<span id="cb19-350"><a href="#cb19-350"></a>  <span class="at">-o</span> <span class="st">"./phyloseq/g3_16s_countTable.tsv"</span> <span class="dt">\</span></span>
-<span id="cb19-351"><a href="#cb19-351"></a>  <span class="at">--to-tsv</span></span>
-<span id="cb19-352"><a href="#cb19-352"></a></span>
-<span id="cb19-353"><a href="#cb19-353"></a><span class="co"># Clean the header for compability with R</span></span>
-<span id="cb19-354"><a href="#cb19-354"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">'1d'</span> ./phyloseq/g3_16s_countTable.tsv</span>
-<span id="cb19-355"><a href="#cb19-355"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">'s/#OTU ID//'</span> ./phyloseq/g3_16s_countTable.tsv</span>
-<span id="cb19-356"><a href="#cb19-356"></a>  </span>
-<span id="cb19-357"><a href="#cb19-357"></a><span class="in">```</span></span>
-<span id="cb19-358"><a href="#cb19-358"></a></span>
-<span id="cb19-359"><a href="#cb19-359"></a>---</span>
+<span id="cb19-327"><a href="#cb19-327"></a>---</span>
+<span id="cb19-328"><a href="#cb19-328"></a></span>
+<span id="cb19-329"><a href="#cb19-329"></a>1️⃣ **Count Table** = ASV-by-sample count matrix</span>
+<span id="cb19-330"><a href="#cb19-330"></a></span>
+<span id="cb19-331"><a href="#cb19-331"></a><span class="in">```bash</span></span>
+<span id="cb19-332"><a href="#cb19-332"></a></span>
+<span id="cb19-333"><a href="#cb19-333"></a><span class="co"># qza to BIOM</span></span>
+<span id="cb19-334"><a href="#cb19-334"></a><span class="ex">qiime</span> tools export <span class="dt">\</span></span>
+<span id="cb19-335"><a href="#cb19-335"></a>  <span class="at">--input-path</span> <span class="st">"./qza/g3_16s_reprSeqs_countTable.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-336"><a href="#cb19-336"></a>  <span class="at">--output-path</span> <span class="st">"./phyloseq"</span></span>
+<span id="cb19-337"><a href="#cb19-337"></a>  </span>
+<span id="cb19-338"><a href="#cb19-338"></a><span class="co"># BIOM to tsv</span></span>
+<span id="cb19-339"><a href="#cb19-339"></a><span class="ex">biom</span> convert <span class="dt">\</span></span>
+<span id="cb19-340"><a href="#cb19-340"></a>  <span class="at">-i</span> <span class="st">"./phyloseq/feature-table.biom"</span> <span class="dt">\</span></span>
+<span id="cb19-341"><a href="#cb19-341"></a>  <span class="at">-o</span> <span class="st">"./phyloseq/g3_16s_countTable.tsv"</span> <span class="dt">\</span></span>
+<span id="cb19-342"><a href="#cb19-342"></a>  <span class="at">--to-tsv</span></span>
+<span id="cb19-343"><a href="#cb19-343"></a></span>
+<span id="cb19-344"><a href="#cb19-344"></a><span class="co"># Clean the header for compability with R</span></span>
+<span id="cb19-345"><a href="#cb19-345"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">'1d'</span> ./phyloseq/g3_16s_countTable.tsv</span>
+<span id="cb19-346"><a href="#cb19-346"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">'s/#OTU ID//'</span> ./phyloseq/g3_16s_countTable.tsv</span>
+<span id="cb19-347"><a href="#cb19-347"></a>  </span>
+<span id="cb19-348"><a href="#cb19-348"></a><span class="in">```</span></span>
+<span id="cb19-349"><a href="#cb19-349"></a></span>
+<span id="cb19-350"><a href="#cb19-350"></a>---</span>
+<span id="cb19-351"><a href="#cb19-351"></a></span>
+<span id="cb19-352"><a href="#cb19-352"></a>2️⃣ **Representative Table** = ASV sequences</span>
+<span id="cb19-353"><a href="#cb19-353"></a></span>
+<span id="cb19-354"><a href="#cb19-354"></a><span class="in">```bash</span></span>
+<span id="cb19-355"><a href="#cb19-355"></a></span>
+<span id="cb19-356"><a href="#cb19-356"></a><span class="co"># qza to fasta</span></span>
+<span id="cb19-357"><a href="#cb19-357"></a><span class="ex">qiime</span> tools export <span class="dt">\</span></span>
+<span id="cb19-358"><a href="#cb19-358"></a>  <span class="at">--input-path</span> <span class="st">"./qza/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-359"><a href="#cb19-359"></a>  <span class="at">--output-path</span> <span class="st">"./phyloseq"</span></span>
 <span id="cb19-360"><a href="#cb19-360"></a></span>
-<span id="cb19-361"><a href="#cb19-361"></a>2️⃣ **Representative Table** = ASV sequences</span>
-<span id="cb19-362"><a href="#cb19-362"></a></span>
-<span id="cb19-363"><a href="#cb19-363"></a><span class="in">```bash</span></span>
-<span id="cb19-364"><a href="#cb19-364"></a></span>
-<span id="cb19-365"><a href="#cb19-365"></a><span class="co"># qza to fasta</span></span>
-<span id="cb19-366"><a href="#cb19-366"></a><span class="ex">qiime</span> tools export <span class="dt">\</span></span>
-<span id="cb19-367"><a href="#cb19-367"></a>  <span class="at">--input-path</span> <span class="st">"./qza/g3_16s_reprSeqs.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-368"><a href="#cb19-368"></a>  <span class="at">--output-path</span> <span class="st">"./phyloseq"</span></span>
-<span id="cb19-369"><a href="#cb19-369"></a></span>
-<span id="cb19-370"><a href="#cb19-370"></a><span class="co"># fasta to two-column text file</span></span>
-<span id="cb19-371"><a href="#cb19-371"></a><span class="fu">awk</span> <span class="st">'BEGIN{RS="&gt;"}{print "#"$1"\t"$2;}'</span> ./phyloseq/dna-sequences.fasta <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb19-372"><a href="#cb19-372"></a>  <span class="fu">tail</span> <span class="at">-n+2</span> <span class="op">&gt;</span> ./phyloseq/g3_16s_dnaSeqs.txt</span>
-<span id="cb19-373"><a href="#cb19-373"></a>  </span>
-<span id="cb19-374"><a href="#cb19-374"></a><span class="in">```</span></span>
-<span id="cb19-375"><a href="#cb19-375"></a></span>
-<span id="cb19-376"><a href="#cb19-376"></a>---</span>
+<span id="cb19-361"><a href="#cb19-361"></a><span class="co"># fasta to two-column text file</span></span>
+<span id="cb19-362"><a href="#cb19-362"></a><span class="fu">awk</span> <span class="st">'BEGIN{RS="&gt;"}{print "#"$1"\t"$2;}'</span> ./phyloseq/dna-sequences.fasta <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb19-363"><a href="#cb19-363"></a>  <span class="fu">tail</span> <span class="at">-n+2</span> <span class="op">&gt;</span> ./phyloseq/g3_16s_dnaSeqs.txt</span>
+<span id="cb19-364"><a href="#cb19-364"></a>  </span>
+<span id="cb19-365"><a href="#cb19-365"></a><span class="in">```</span></span>
+<span id="cb19-366"><a href="#cb19-366"></a></span>
+<span id="cb19-367"><a href="#cb19-367"></a>---</span>
+<span id="cb19-368"><a href="#cb19-368"></a></span>
+<span id="cb19-369"><a href="#cb19-369"></a>3️⃣ **Taxonomy Table** = ASV taxonomy classifications</span>
+<span id="cb19-370"><a href="#cb19-370"></a></span>
+<span id="cb19-371"><a href="#cb19-371"></a><span class="in">```bash</span></span>
+<span id="cb19-372"><a href="#cb19-372"></a></span>
+<span id="cb19-373"><a href="#cb19-373"></a><span class="co"># qza to tsv</span></span>
+<span id="cb19-374"><a href="#cb19-374"></a><span class="ex">qiime</span> tools export <span class="dt">\</span></span>
+<span id="cb19-375"><a href="#cb19-375"></a>  <span class="at">--input-path</span> <span class="st">"./qza/g3_16s_reprSeqs_taxAligned.qza"</span> <span class="dt">\</span></span>
+<span id="cb19-376"><a href="#cb19-376"></a>  <span class="at">--output-path</span> <span class="st">"./phyloseq"</span></span>
 <span id="cb19-377"><a href="#cb19-377"></a></span>
-<span id="cb19-378"><a href="#cb19-378"></a>3️⃣ **Taxonomy Table** = ASV taxonomy classifications</span>
-<span id="cb19-379"><a href="#cb19-379"></a></span>
-<span id="cb19-380"><a href="#cb19-380"></a><span class="in">```bash</span></span>
-<span id="cb19-381"><a href="#cb19-381"></a></span>
-<span id="cb19-382"><a href="#cb19-382"></a><span class="co"># qza to tsv</span></span>
-<span id="cb19-383"><a href="#cb19-383"></a><span class="ex">qiime</span> tools export <span class="dt">\</span></span>
-<span id="cb19-384"><a href="#cb19-384"></a>  <span class="at">--input-path</span> <span class="st">"./qza/g3_16s_reprSeqs_taxAligned.qza"</span> <span class="dt">\</span></span>
-<span id="cb19-385"><a href="#cb19-385"></a>  <span class="at">--output-path</span> <span class="st">"./phyloseq"</span></span>
-<span id="cb19-386"><a href="#cb19-386"></a></span>
-<span id="cb19-387"><a href="#cb19-387"></a><span class="co"># rename file</span></span>
-<span id="cb19-388"><a href="#cb19-388"></a><span class="fu">mv</span> ./phyloseq/taxonomy.tsv ./phyloseq/g3_16s_taxonomy.tsv</span>
-<span id="cb19-389"><a href="#cb19-389"></a></span>
-<span id="cb19-390"><a href="#cb19-390"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb19-378"><a href="#cb19-378"></a><span class="co"># rename file</span></span>
+<span id="cb19-379"><a href="#cb19-379"></a><span class="fu">mv</span> ./phyloseq/taxonomy.tsv ./phyloseq/g3_16s_taxonomy.tsv</span>
+<span id="cb19-380"><a href="#cb19-380"></a></span>
+<span id="cb19-381"><a href="#cb19-381"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

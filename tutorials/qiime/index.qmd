@@ -7,6 +7,7 @@ format:
     toc-depth: 3
     code-fold: true
     code-tools: true
+    lightbox: true
 execute:
   echo: true
   warning: false
@@ -25,22 +26,6 @@ On a local machine (eg. Linux, macOS). On a remote HPC system.
 
 -   **What's the end goal?** 
 To produce an ASV count table, representative sequence table, and taxonomy table that links to sample metadata. These outputs can be then shuttled to R for statistical and ecological analysis. 
-
----
-
-This tutorial will walk you through 7 steps:
-
-::: {.callout-note title="PIPELINE STEPS"}
-| Step | Purpose | Main outputs |
-|-------|---------|--------------|
-| 1 | Import paired-end reads, assess quality using **FASTQC** | `.qza` (raw sequences), `.qzv` (quality summaries) |
-| 2 | Remove primers, adapters | `.qza` (trimmed reads), `.qzv` (post-trim quality) |
-| 3 | Independent quality control (optional) | FASTQC reports |
-| 4 | Determine truncation lengths using **Figaro** | Truncation parameters (`.json`) |
-| 5 | Denoise, merge reads using **DADA2** | ASV table, representative sequences, denoising stats |
-| 6 | Assign taxonomy using **SILVA** classifier | Taxonomy `.qza`, `.qzv` |
-| 7 | Export files for **R / phyloseq** | `.tsv`, `.txt` files |
-:::
 
 .
 
@@ -107,6 +92,12 @@ qiime tools import \
  - Output: creates a QIIME2 artifact (.qza) at specified location using the specified name.
  - Encoding: FASTQ files use Phred+33 (standard Illumina quality encoding).
  
+ 
+ > 🟣 **What does the manifest file look like?** 
+ > The manifest shows QIIME2 where to locate the forward and reverse reads. Click the screenshot to see:
+
+![](images/Manifest.png){width=800px lightbox="true"}
+
  ---
  
  Now change the qz**a** to qz**v** to visualize
