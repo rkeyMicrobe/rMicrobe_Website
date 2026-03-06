@@ -72,8 +72,21 @@ lapply(names(sessionInfo()$otherPkgs), function(pkg) {
 rm(list = ls()); gc(); cat("\014")
 
 ```
+Second: Load in packages
 
-Second: I set a plotting theme (a personal, yet consistent theme for your plots). I also recommend setting script output path variables. You are telling where you'd like your outputs to go. Which folders. During any saving of files and plots. 
+```R
+# LOAD PACKAGES
+library("tidyverse")
+library("viridis")
+library("cowplot")
+library("feather")
+library("bestNormalize")
+library("WGCNA")
+library("compositions")
+
+```
+
+Third: I set a plotting theme (a personal, yet consistent theme for your plots). I also recommend setting script output path variables. You are telling where you'd like your outputs to go. Which folders. During any saving of files and plots. 
 
 ```R
 
@@ -103,7 +116,7 @@ amps_clean <- read_feather(paste0(lmm_dir, "g123_phytos_clrData.feather"))
  > CLR transformation is used because ASV dataframes are compositional. Each sample is constrained by sequencing depth. CLR transforms it to log-ratios relative to the geometric mean of each sample. Makes it suitable for standard correlation and multivariate analyses. 
 
  > 🟣 **Why does the amplicon dataframe look like?**
- > SampleID as rows. ASVs as column names. Cruise is which dataset year, important for my work only. 
+ > SampleID as rows. ASVs as column names. Cruise is which dataset year (important for my work only).  
  
 ![](images/1_amps.png){width=800px lightbox="true"}
 
@@ -133,9 +146,9 @@ smps_pon <- read.csv(paste0(lmm_dir, "boxcox_PON.csv")) %>% tibble
 
 ### **Step 2: Integration**
 
-This step aligns the amplicon data with environmental measurements so that (1) all datasets contain the same samples and (2) everyone is in the same order before we pass contents over to WGCNA.
+This step aligns the amplicon data with environmental measurements so that (1) all datasets contain the same samples and (2) samples are in the same order before we pass contents over to WGCNA.
 
-First, let's subset. 
+First: let's subset. 
 
 ```R
 
@@ -166,7 +179,7 @@ vars <- smps_ncp %>% filter(sampleID %in% shared_smps) %>%
   left_join(., cleanUp(data = smps_pon, smp_list = shared_smps, column = pn))
 ```
 
-Now, let's force identical sample ordering across all datasets. This will combine microbes + environmental variables into one WGCNA input. 
+Second: let's force identical sample ordering across datasets. Afterwards, we can combine microbes + environmental variables into one WGCNA input. 
 
 ```R
 # Handle Amplicon dataset and chronologically order samples based on var dataset
@@ -188,7 +201,7 @@ data <- cbind(vars %>% select(NCP, pc, pn),
  
 ![](images/4_data.png){width=800px lightbox="true"}
 
-Lastly, let's make one more final adjustment for WGCNA. **We need to transpose.** Samples as columns, features (ie. ASVs + biochem variables) as rows.
+One more adjustment for WGCNA. **We need to transpose.** Samples as columns, features as rows. And by features, I mean ASV ids and biochem variables. 
 
 ```R
 # transpose for samples as columns
@@ -212,7 +225,7 @@ All done!
 
 ### **Step 3: The Powers that Be**
 
-We have the data input. Now we need to call a soft-thresholding power before WGCNA network construction. The goal is to choose a power that produces a network with **scale-free topology**. 
+We have the WGCNA data input. Now: We need to call a soft-thresholding power before the actual network construction. The goal: choose a power that produces a network with **scale-free topology**. 
 
 > 🟡 **What is scale-free topology?** This is a network where most nodes have few connections, and a small number of nodes have many connections. In other words: most microbes co-vary with only a few others, while others act as highly connected hubs. We choose a power that transform the correlation network to approximate this structure.
 
@@ -225,8 +238,8 @@ powers = c(1:10, seq(from = 12, to = 20, by = 2))
 sft = pickSoftThreshold(df, powerVector = powers, verbose = 5) 
 
 ```
- - I am creating a vector of power values to test (1 to 20).
- - ⬆️ power = strengthens strong correlations = shrinks weak correlations toward zero.
+ - I am creating a vector of power values to test. 1 to 20.
+ - ⬆️ power will strengthen strong correlations & shrink weak correlations toward zero.
  - `pickSoftThreshold`. Tests each power and provides diagnostic metrics.
  
 **Now, I generate some plots to evaluate: **
@@ -264,21 +277,21 @@ p <- plot_grid(p1, p2); p
 
  ![](images/6_metrics.png){width=800px lightbox="true"}
  
-> As an ecologist, I would focus on two criteria
->  (1) achieving scale-free topology.
->  (2) maintaining enough network connectivity.
+> I highly recommend focusing on these two criteria. You want:
+>  (1) to achieve scale-free topology.
+>  (2) to maintain enough network connectivity.
 
 ::: {.panel-tabset}
 
 #### Left Plot
 
-The goal is to identify the lowest power where the scale-free fit (R²) reaches ~0.8 to 0.90. You want a biological network that shows an familiar biological pattern: most nodes have few connections while a small number act as highly connected hubs. Very high powers can make the network too sparse and remove weaker association that can still be biologically meaningful.
+The goal is to identify the lowest power where the scale-free fit (R²) reaches 0.8 to 0.90. You want a biological network that shows scale-free topology. Very high powers = low R² = the network becomes too sparse and you risk removing weaker (yet still biologically meaningful) associations. High sparsity means no connections between ASVs. Everyone stands alone. 
 
 > If R² never reaches 0.8, select the highest stable point before connectivity collapses.
 
 #### Right Plot
 
-The goal is to make sure the network does not become too sparse. WGCNA groups ASVs into clusters (ie. modules). So we choose a power that maintains enough connectivity to detect modules without over- or under-clustering the network.
+For connectivity: the goal is to make a WGCNA network that contains clusters. We bin ASVs based on their relative percent abundance patterns. So we choose a power that maintains enough connectivity to detect modules without over- or under-clustering the network.
 
 #### Combining Both
 
@@ -287,7 +300,7 @@ You must look at both plots to come up with a suitable power. We want the lowest
 **For my analysis, I chose a power of 6.**
 
 - Scale free topology is close to 0.9 (pink line).
-- Connectivity is still present (above 0 clusters).
+- Connectivity is still present (above 0 number of clusters).
 
 ```R
 sft$fitIndices %>% 
@@ -304,7 +317,7 @@ sft$fitIndices %>%
 
 :::
 
-> 🔴 **VERY IMPORTANT!** Test multiple power values (ie. each power = 1 network). The chosen power strongly influences network structure. If similar ASV modules appear across powers, we have more confidence to conclude that the patterns we are seeing reflect real co-variation, NOT artifacts of parameter choice. Or what looks (subjectively) good to report or conclude.
+> 🔴 **VERY IMPORTANT!** I strongly recommend testing multiple power values (ie. each power = 1 network). The chosen power strongly influences network structure. If similar ASV modules appear across powers, we have more confidence to conclude that inferred network patters reflect real covariation, NOT artifacts of parameter choice. Or what looks (subjectively) good to report or conclude.
 
 
 ---
@@ -315,7 +328,9 @@ sft$fitIndices %>%
 
 ### **Step 4: Network Construction**
 
-This step shows you how to construct a WGCNA network and explains each parameter in the WGCNA command. Let's first call out important parameters:
+Let's now construct the first WGCNA network. I will explain parameters in the WGCNA command. 
+
+First: call out important parameters.
 
 ```R
 power = 6
@@ -332,7 +347,7 @@ TOM_type <- "signed" # both positive/negative directions
 - `type = "signed"` We are capturing both positive and negative correlations. 
 
 
-**This next command: you are officially making a network with this code chunk...**
+**This next command: you are officially making a network with this code chunk...** 
 
 ```R
 
@@ -362,10 +377,10 @@ netwk = blockwiseModules(as.matrix(df),
                          saveTOMFileBase = tom)
 ```
 
-You have noticed two more parameters not talked about:
+Two more parameters not talked about above:
 
-- `deepsplit = 4` is higher than the default value of 2. I intentionally increase sensitivity for detecting smaller modules. For my data, connectivity at power 6 will contain few clusters (close to zero!). So increasing sensitity here helps avoid grouping many ASVs into a single large cluster. 
-- `mergeCutHeight` I keep this to default. Modules with eigengene correlation ≥ 0.75 are merged. 
+- `deepsplit = 4` is higher than the default value of 2. I intentionally increase sensitivity for detecting smaller modules. For my data, connectivity at power 6 will contain few clusters (close to zero!). So increasing sensitivity here helps avoid grouping many ASVs into a single large cluster since we are close to zero on our connectivity plot.
+- `mergeCutHeight` I keep this at default. Modules with eigengene correlation ≥ 0.75 are merged. 
 
 ---
 
@@ -375,7 +390,7 @@ You have noticed two more parameters not talked about:
 
 ### **Step 5: First Look at Clusters**
 
-I make my ggplots the way I like them, choosing color-blind friendly palettes. So this next chunk of code is changing WGCA default colors to my own colors. 
+I make plots the way I like them. With color-blind friendly palettes. This next code chunk changes WGCA default colors to my own colors. 
 
 ```R
 
@@ -417,7 +432,7 @@ netwk$moduleColorsHex <- custom_colors[netwk$moduleColors]
 
 ```
 
-Afterwards, let's look at clusters via dendrogram. 
+After changing names and provides hexes for the new names, we can now look at clusters via dendrogram. 
 
 ```R
 
@@ -452,13 +467,13 @@ Happy dendrogram
 
 #### The Dendrogram
 
-The dendrogram tree is showing similarity among ASVs based on correlations. Branches connect ASVs with similar abundance patterns across samples. The height metric reflects dissimilarity.
+The dendrogram tree is showing similarity among ASVs based on correlations. Branches connect ASVs with similar abundance patterns across samples. The height metric reflects dissimilarity. ASVs closer to 1 are more similar. 
 
 #### The Module Bar
 
-The color bar on the bottom is your modules, or clusters. Each ASV gets a color based on assigned cluster. Color = Module. But! For my network, the gray color represents ASVs not assigned to any cluster. 
+The color bar underneath is the dendro is showing assigned modules, or clusters, for ASVs. Color = Module. But! For my network, the gray color represents ASVs not assigned to any cluster. 
 
-**Ideally, you don't want lots of colors. Nor do you want just one color.**
+**Ideally, you don't want lots of colors (hyper-clustered network). Nor do you want just one color (one dominant clusters).**
 
 :::
 
@@ -470,15 +485,15 @@ The color bar on the bottom is your modules, or clusters. Each ASV gets a color 
 
 ### **Step 6: Cytoscape Imports**
 
-Now, we are beginning to generate Cytoscape imports. 
+This step: we are making Cytoscape imports. 
 
-The first thing is to shift ASV correlations into network connection strengths... Towards the end of this next code section, we are converting the TOM matrix into two tables:
+We will shift ASV correlations into network connection strengths. And towards the end, we convert the TOM matrix into two tables:
 
 - **The Node Table** (the ASVs)
 - And **the Edge Table** (the line connections between ASVs)
 - Plus, we are setting a edge threshold strength of 0.1 to remove very weak associations
 
-> 🟣 You'll notice a `taxonomy` variable being generated in this chunk. In my case, I append taxonomy ranks for each ASV to the node table so I can view taxonomic info while exploring cluster patterns in Cytoscape. You likely do not need this chunk of code, but I kept it just to show the process I took before jumping into network visualizations.
+> 🟣 You'll notice a `taxonomy` variable being generated in this chunk. For my work, I append taxonomy ranks for each ASV to the node table so I can view taxonomic info while exploring cluster patterns in Cytoscape. You do not need this chunk of code. But! I still kept it in, to show the process I took before jumping into Cytoscape network visuals.
 
 ```R
 
@@ -509,7 +524,7 @@ cyt = exportNetworkToCytoscape(modTOM,
 
 ```
 
-**The next section further cleans and formats these two tables.** 
+**The next section further cleans and formats these EDGE and NODE tables.** 
 
 ```R
 # Make sure your new cluster names are in replace of old names or hex colors
@@ -554,11 +569,11 @@ write_delim(nod, file = nodes_result, delim = "\t")
 
 ```
 
-After all said 'n done: there are three Cytoscape input files, which are...
+After all said 'n done: there should be three Cytoscape input files, which are...
 
 - **Taxonomy table**. Contains ASV names, cluster assignments, and taxonomy ranks
 - **Edge Table**. Contains network connections
-- **Node Table**. Contains ASV information. 
+- **Node Table**. Contains ASV info.
 
 
 ---
@@ -581,7 +596,7 @@ eigens <- moduleEigengenes(df, colors = netwk$moduleColors)$eigengenes
 - A module eigengene is the first principal component of all ASVs within a module. And represents the overall abundance pattern of that module across samples.
 - WGCNA also automatically labels the cluster names "ME" before saying a color.
 
-Let's remove these and create an ASV-module lookup table:
+Let's remove the ME's. Then create an ASV-module table:
 
 ```R
 
@@ -648,3 +663,27 @@ p
 Congratulations! You have completed the ASV WGCNA tutorial!
 ✨
 ✨
+
+---
+
+**Was this tutorial helpful?** 
+
+You can email me with questions. If you use copy this workflow or adapt the ASV-based WGCNA methodology described here, please cite my methods here: <https://journals.asm.org/doi/full/10.1128/msystems.00801-25>
+
+
+> 🟣 **Citations**
+>
+> If you use the WGCNA tool, please cite the foundational WGCNA papers:
+>
+> - Zhang B, Horvath S. (2005). A General Framework for Weighted Gene Co-Expression Network Analysis. Statistical Applications in Genetics and Molecular Biology, 4(1):Article17. DOI: 10.2202/1544-6115.1128
+> - Langfelder P, Horvath S. (2008). WGCNA: an R package for weighted correlation network analysis. BMC Bioinformatics, 9:559. DOI: 10.1186/1471-2105-9-559
+
+> **Other Useful Resources**
+>
+> - Langfelder P, Zhang B, Horvath S. (2008). Defining clusters from a hierarchical cluster tree: the Dynamic Tree Cut package for R. Bioinformatics, 24(5):719-720. DOI: 10.1093/bioinformatics/btm563 
+> - Langfelder P, Horvath S. (2007). Eigengene networks for studying the relationships between co-expression modules. BMC Systems Biology, 1:54. DOI: 10.1186/1752-0509-1-54
+> - Langfelder P, Luo R, Oldham MC, Horvath S. (2011). Is my network module preserved and reproducible? PLoS Computational Biology, 7(1):e1001057. DOI: 10.1371/journal.pcbi.1001057
+> - Langfelder P, Horvath S. (2012). Fast R Functions for Robust Correlations and Hierarchical Clustering. Journal of Statistical Software, 46(11):1-17. DOI: 10.18637/jss.v046.i11
+
+
+
