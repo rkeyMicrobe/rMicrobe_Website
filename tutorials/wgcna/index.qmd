@@ -585,7 +585,7 @@ Let's remove these and create an ASV-module lookup table:
 
 ```R
 
-olnames(eigens) <- gsub("^ME", "", colnames(eigens))
+colnames(eigens) <- gsub("^ME", "", colnames(eigens))
 length(colnames(eigens))
 colnames(eigens)
 

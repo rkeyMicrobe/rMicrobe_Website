@@ -24,7 +24,7 @@ These are reproducible walkthroughs written entirely in Quarto (.qmd) files.
 
 [WGCNA](wgcna/index.qmd){.btn .btn-primary .me-2} \* R
 
-[Spiec-Easi](spiec/list.qmd){.btn .btn-primary .me-2} \* R
+[Spiec-Easi](spiec/index.qmd){.btn .btn-primary .me-2} \* R
 
 ------------------------------------------------------------------------
 
