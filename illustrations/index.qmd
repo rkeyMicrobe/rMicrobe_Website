@@ -39,7 +39,7 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 ![](images/phyt3.png){width=100%}
 
 <div class="tile-desc">
-**Polychaete worm**, available in black or white.
+**Cyclotella**, available in black or white.
 </div>
 
 </div>
