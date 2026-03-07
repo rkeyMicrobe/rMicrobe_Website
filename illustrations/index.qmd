@@ -30,8 +30,69 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 
 ::: {.panel-tabset}
 
-### Phytoplankton
+### Phytoplankton Outlines 
 
+<div class="gallery-grid">
+
+<div class="tile-card">
+
+![](images/phyt3.png){width=100%}
+
+<div class="tile-desc">
+**Polychaete worm**, genus Tomopteris.
+</div>
+
+</div>
+
+
+<div class="tile-card">
+
+![](images/phyt2.png){width=100%}
+
+<div class="tile-desc">
+**Polychaete worm**, genus Tomopteris.
+</div>
+
+</div>
+
+
+<div class="tile-card">
+
+![](images/phyt4.png){width=100%}
+
+<div class="tile-desc">
+**Polychaete worm**, genus Tomopteris.
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/phyt5.png){width=100%}
+
+<div class="tile-desc">
+**Polychaete worm**, genus Tomopteris.
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/phyt6.png){width=100%}
+
+<div class="tile-desc">
+**Polychaete worm**, genus Tomopteris.
+</div>
+
+</div>
+
+
+
+
+
+
+
+</div>
 
 ---
 
@@ -51,10 +112,10 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 
 <div class="tile-card">
 
-![](images/test2.png){width=100%}
+![](images/zoo_tom.png){width=100%}
 
 <div class="tile-desc">
-Illustration showing heterocyst formation and nitrogen fixation.
+**Polychaete worm**, genus Tomopteris.
 </div>
 
 </div>
@@ -63,10 +124,10 @@ Illustration showing heterocyst formation and nitrogen fixation.
 
 <div class="tile-card">
 
-![](images/test.png){width=100%}
+![](images/zoo_jel.png){width=100%}
 
 <div class="tile-desc">
-Conceptual diagram of sulfur oxidation pathways.
+**Narcomedusan** jelly, Hydrozoa. 
 </div>
 
 </div>
@@ -75,10 +136,10 @@ Conceptual diagram of sulfur oxidation pathways.
 
 <div class="tile-card">
 
-![](images/test.png){width=100%}
+![](images/zoo_shr.png){width=100%}
 
 <div class="tile-desc">
-Interaction between phytoplankton and surrounding microbes.
+**Krill**, Euphausiid zooplankton grazer.
 </div>
 
 </div>
@@ -87,10 +148,10 @@ Interaction between phytoplankton and surrounding microbes.
 
 <div class="tile-card">
 
-![](images/test.png){width=100%}
+![](images/zoo.png){width=100%}
 
 <div class="tile-desc">
-Illustration of microbial metabolite cycling.
+**Marine Copepod**, lateral-view. Unknown genus.
 </div>
 
 </div>
@@ -99,14 +160,33 @@ Illustration of microbial metabolite cycling.
 
 <div class="tile-card">
 
-![](images/test.png){width=100%}
+![](images/zoo2.png){width=100%}
 
 <div class="tile-desc">
-Example placeholder for additional drawings.
+**Calanoid copepod**, lateral-view. Unknown genus.
 </div>
 
 </div>
 
+<div class="tile-card">
+
+![](images/zoo3.png){width=100%}
+
+<div class="tile-desc">
+**Amphipod**, zooplankton crustacean
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/zoo4.png){width=100%}
+
+<div class="tile-desc">
+**Marine Zooplankton**, Unknown genus
+</div>
+
+</div>
 
 
 </div>
