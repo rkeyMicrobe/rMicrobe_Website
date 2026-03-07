@@ -30,16 +30,63 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 
 ::: {.panel-tabset}
 
-### Phytoplankton Outlines 
+### Green Algae 
 
 <div class="gallery-grid">
 
 <div class="tile-card">
 
-![](images/phyt3.png){width=100%}
+![](images/gre_1.png){width=100%}
 
 <div class="tile-desc">
-**Cyclotella**, available in black or white.
+**Micrasterias hardyi**. Desmid. Also available as line art (no color).
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/gre_2.png){width=100%}
+
+<div class="tile-desc">
+**Tetmemorus laevis**. Also available as line art.
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/gre_3.png){width=100%}
+
+<div class="tile-desc">
+**Cosmarium**. Desmid. Also available as line art.
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/gre_4.png){width=100%}
+
+<div class="tile-desc">
+**Bathycoccus prasinos**. 
+</div>
+
+</div>
+
+
+</div>
+
+### Phytoplankton 
+
+<div class="gallery-grid">
+
+<div class="tile-card">
+
+![](images/ph_1.png){width=100%}
+
+<div class="tile-desc">
+**Pseudo-nichtzchia**. Marine Diatom. Also available as line art (no color).
 </div>
 
 </div>
@@ -47,10 +94,10 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 
 <div class="tile-card">
 
-![](images/phyt2.png){width=100%}
+![](images/ph_2.png){width=100%}
 
 <div class="tile-desc">
-**Trigonium americanum**, available in black or white.
+**Meridion circulare**. Freshwater Diatom. Also available as line art (no color).
 </div>
 
 </div>
@@ -58,46 +105,133 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 
 <div class="tile-card">
 
-![](images/phyt4.png){width=100%}
+![](images/ph_3.png){width=100%}
 
 <div class="tile-desc">
-**Odeontella**, available in black or white.
+**Unknown Diatom**. Marine Phytoplankton. Also available as line art (no color).
 </div>
 
 </div>
+
 
 <div class="tile-card">
 
-![](images/phyt5.png){width=100%}
+![](images/ph_4.png){width=100%}
 
 <div class="tile-desc">
-**Triceratium**, available in black or white.
+**Chaetoceros**. Marine Diatom. Also available as line art (no color).
 </div>
 
 </div>
+
 
 <div class="tile-card">
 
-![](images/phyt6.png){width=100%}
+![](images/ph_5.png){width=100%}
 
 <div class="tile-desc">
-**Ditylum brightwelli**, available in black or white.
+**Chaetoceros Spp.**. Marine Diatom. Also available as line art (no color).
 </div>
 
 </div>
 
 
+<div class="tile-card">
 
+![](images/ph_6.png){width=100%}
 
-
-
+<div class="tile-desc">
+**Odontella**. Freshwater Diatom. Also available as line art (no color).
+</div>
 
 </div>
+
+
+<div class="tile-card">
+
+![](images/ph_7.png){width=100%}
+
+<div class="tile-desc">
+**Ditylum brightwelli**. Marine Diatom. Also available as line art (no color).
+</div>
+
+</div>
+
+
+<div class="tile-card">
+
+![](images/ph_8.png){width=100%}
+
+<div class="tile-desc">
+**Synechococcus**. Cyanobacteria. Also available as line art (no color).
+</div>
+
+</div>
+
+</div>
+
 
 ---
 
 ### Bacteria
 
+
+<div class="gallery-grid">
+
+<div class="tile-card">
+
+![](images/bac_1.png){width=100%}
+
+<div class="tile-desc">
+**Synechococcus**. Cyanobacteria. Also available as line art (no color).
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/bac_2.png){width=100%}
+
+<div class="tile-desc">
+**Prochlorococcus**. Cyanobacteria. Also available as line art (no color).
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/bac_3.png){width=100%}
+
+<div class="tile-desc">
+**Cyanobacteria**. Filamentous Nostoc. Also available as line art (no color).
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/bac_4.png){width=100%}
+
+<div class="tile-desc">
+**Chroococcus turgidus**. Cyanobacteria. Also available as line art (no color).
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/bac_5.png){width=100%}
+
+<div class="tile-desc">
+**Unknown Bacteria**. Also available as line art (no color).
+</div>
+
+</div>
+
+
+
+
+</div>
 
 ---
 
@@ -194,5 +328,66 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 ---
 
 ### Figure Samples
+
+
+
+
+### Line Art 
+
+<div class="gallery-grid">
+
+<div class="tile-card">
+
+![](images/phyt3.png){width=100%}
+
+<div class="tile-desc">
+**Cyclotella**, available in black or white.
+</div>
+
+</div>
+
+
+<div class="tile-card">
+
+![](images/phyt2.png){width=100%}
+
+<div class="tile-desc">
+**Trigonium americanum**, available in black or white.
+</div>
+
+</div>
+
+
+<div class="tile-card">
+
+![](images/phyt4.png){width=100%}
+
+<div class="tile-desc">
+**Odeontella**, available in black or white.
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/phyt5.png){width=100%}
+
+<div class="tile-desc">
+**Triceratium**, available in black or white.
+</div>
+
+</div>
+
+<div class="tile-card">
+
+![](images/phyt6.png){width=100%}
+
+<div class="tile-desc">
+**Ditylum brightwelli**, available in black or white.
+</div>
+
+</div>
+
+</div>
 
 :::
