@@ -39,7 +39,7 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 ![](images/phyt3.png){width=100%}
 
 <div class="tile-desc">
-**Polychaete worm**, genus Tomopteris.
+**Polychaete worm**, available in black or white.
 </div>
 
 </div>
@@ -50,7 +50,7 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 ![](images/phyt2.png){width=100%}
 
 <div class="tile-desc">
-**Polychaete worm**, genus Tomopteris.
+**Trigonium americanum**, available in black or white.
 </div>
 
 </div>
@@ -61,7 +61,7 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 ![](images/phyt4.png){width=100%}
 
 <div class="tile-desc">
-**Polychaete worm**, genus Tomopteris.
+**Odeontella**, available in black or white.
 </div>
 
 </div>
@@ -71,7 +71,7 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 ![](images/phyt5.png){width=100%}
 
 <div class="tile-desc">
-**Polychaete worm**, genus Tomopteris.
+**Triceratium**, available in black or white.
 </div>
 
 </div>
@@ -81,7 +81,7 @@ This page hosts a collection of microbes, their hosts, and grazers (eg. zooplank
 ![](images/phyt6.png){width=100%}
 
 <div class="tile-desc">
-**Polychaete worm**, genus Tomopteris.
+**Ditylum brightwelli**, available in black or white.
 </div>
 
 </div>
