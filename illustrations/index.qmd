@@ -1,4 +1,117 @@
 ---
-title: "Under Construction"
-format: html
+title: "TinyLife Science Illustrations"
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    lightbox: true
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
+
+## **You drifted into a microbial bloom... **
+
+**... of illustrations** 😜
+
+This page hosts a collection of microbes, their hosts, and grazers (eg. zooplankton). The drawings were designed to be used for teaching materials, presentations, and academic communication.
+
+> If you would like to use an illustration, please contact me for permission. Academic use is generally permitted with attribution. Requests for other uses (commercial applications, logo designs, or designing a full custom figure) will require a consult and pricing!
+
+**For inquiries or permissions, please email:** <rkeyMicrobe@proton.me>
+Please put "art" in your subject line.
+
+---
+
+::: {.panel-tabset}
+
+### Phytoplankton
+
+
+---
+
+### Bacteria
+
+
+---
+
+### Hosts
+
+
+---
+
+### Zooplankton
+
+<div class="gallery-grid">
+
+<div class="tile-card">
+
+![](images/test2.png){width=100%}
+
+<div class="tile-desc">
+Illustration showing heterocyst formation and nitrogen fixation.
+</div>
+
+</div>
+
+
+
+<div class="tile-card">
+
+![](images/test.png){width=100%}
+
+<div class="tile-desc">
+Conceptual diagram of sulfur oxidation pathways.
+</div>
+
+</div>
+
+
+
+<div class="tile-card">
+
+![](images/test.png){width=100%}
+
+<div class="tile-desc">
+Interaction between phytoplankton and surrounding microbes.
+</div>
+
+</div>
+
+
+
+<div class="tile-card">
+
+![](images/test.png){width=100%}
+
+<div class="tile-desc">
+Illustration of microbial metabolite cycling.
+</div>
+
+</div>
+
+
+
+<div class="tile-card">
+
+![](images/test.png){width=100%}
+
+<div class="tile-desc">
+Example placeholder for additional drawings.
+</div>
+
+</div>
+
+
+
+</div>
+
+---
+
+### Figure Samples
+
+:::
